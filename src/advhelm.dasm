@@ -1,0 +1,17 @@
+SET PC, start
+
+.include 'drivers.inc'
+.include 'stdio.inc'
+.include 'thruster.inc'
+
+
+start:
+JSR setup_hw
+JSR setup_thusters
+
+main_loop:
+IFN [sensor_hwid], 0xFFFF
+	JSR display_contacts
+	
+
+SET PC, main_loop
