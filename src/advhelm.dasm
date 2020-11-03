@@ -1,17 +1,703 @@
 SET PC, start
+; Includes and setup variables
+:major_version
+DAT 0x0002
+:minor_version
+DAT 0x0000
 
-.include 'drivers.inc'
-.include 'stdio.inc'
-.include 'thruster.inc'
+.include 'src\alpha5\drivers.inc'
+.include 'src\alpha5\thrusters.inc'
+.include 'src\alpha5\stdout.inc'
+.include 'src\alpha5\sensors.inc'
+.include 'src\alpha5\ops.inc'
+.include 'src\alpha5\radio.inc'
+.include 'src\alpha5\nav.inc'
+
+:helm_mode
+DAT 0x0001
+:radio_mode
+DAT 0x0000
+:ops_mode
+DAT 0x0000
+:hcursor
+DAT 0x0000
+:rcursor1
+DAT 0x0000
+:rcursor2
+DAT 0x0000
+:rcursor3
+DAT 0x0000
 
 
-start:
-JSR setup_hw
-JSR setup_thusters
 
-main_loop:
-IFN [sensor_hwid], 0xFFFF
-	JSR display_contacts
+; Initilize Hardware
+
+:start
+; Assumes LEM1802, generic keyboard, generic clock, 
+JSR check_hw
+JSR intro_screen
+; Assumes 8 thrusters 2 per side
+JSR setup_thrusters
+; Assumes standard sensor 2000m range 120 arc
+
+; Ready to go
+; ==============================
+:take_off
+SET [keys_changed], 0
+IAS irq_handler
+SET A, 1
+SET B, [stationIDB]
+SET C, [stationIDC]
+HWI [radio1_hwid]
+SET A, 1
+SET B, 0x0000
+SET C, 0x0000
+HWI [radio2_hwid]
+SET X, str_sending_message
+SET Y, [sending_message]
+SET Z, 14
+JSR mem_copy
+:wait_for_key_loop1
+IFE [keys_changed], 0
+	SET PC, wait_for_key_loop1
+
+SET [keys_changed], 1
+JSR helm_mode_func
+
+; Main loop
+; ==============================
+
+
+
+:wait_for_key_loop
+SET [cursor], 27
+SET J, 3
+IFE [helm_mode], 1
+	JSR write_throttle
+SET [cursor], 0x0060
+IFE [helm_mode], 1
+IFN [fsensor_hwid], 0xffff
+	JSR display_sensors
+IFE [ops_mode], 1
+	JSR display_ops
+IFE [radio_mode], 1
+	JSR display_radio1
+IFE [radio_mode], 2
+	JSR display_radio2
+IFE [radio_mode], 3
+	JSR display_radio3
+
+
+IFE [keys_changed], 0
+	SET PC, wait_for_key_loop
 	
 
-SET PC, main_loop
+
+SET [keys_changed], 0
+SET I, 0
+SET A, 2
+:key_update_loop
+SET B, [I + keys]
+HWI [keyboard_hwid]
+SET [I + keys_down], C
+ADD I, 1
+IFL I, 14
+	SET PC, key_update_loop
+
+; 0: W
+; 1: W
+; 2: S
+; 3: S
+; 4: D | E
+; 5: D | Q
+; 6: A | Q
+; 7: A | E
+
+SET A, 0
+; 0
+; 1
+SET B, 0
+IFE [key_w_down], 1
+SET B, [throttle]
+HWI 0
+HWI 1
+; 2
+; 3
+SET B, 0
+IFE [key_s_down], 1
+SET B, [throttle]
+HWI 2
+HWI 3
+; 4
+SET B, 0
+IFE [key_d_down], 1
+SET B, [throttle]
+IFE [key_e_down], 1
+SET B, [throttle]
+HWI 4
+; 5
+SET B, 0
+IFE [key_d_down], 1
+SET B, [throttle]
+IFE [key_q_down], 1
+SET B, [throttle]
+HWI 5
+; 6
+SET B, 0
+IFE [key_a_down], 1
+SET B, [throttle]
+IFE [key_q_down], 1
+SET B, [throttle]
+HWI 6
+; 7
+SET B, 0
+IFE [key_a_down], 1
+SET B, [throttle]
+IFE [key_e_down], 1
+SET B, [throttle]
+HWI 7
+
+IFE [key_t_down], 1
+	JSR throttle_up
+IFE [key_g_down], 1
+	JSR throttle_down
+	
+IFE [key_enter_down], 1
+	JSR pressed_enter
+	
+IFE [key_f_down], 1
+	JSR fire_laser
+
+IFE [ops_mode], 1
+	JSR ops_control
+
+IFN [radio_mode], 0
+	JSR radio_control
+	
+
+
+IFE [key_left_down], 1
+	IFE [helm_mode], 1
+		JSR ops_mode_func
+		
+IFE [key_right_down], 1
+	IFE [helm_mode], 1
+		JSR radio1_mode_func
+
+SET PC, wait_for_key_loop
+
+
+
+:catch_fire
+DAT 0x0000
+
+
+; Interrupt handler
+; ==============================
+:irq_handler
+IFE A, [keyboard_hwid] 
+	JSR keyboard_irq_handler
+IFE A, [radio1_hwid]
+	JSR check_radio1
+IFE A, [radio2_hwid]
+	JSR check_radio2
+
+RFI 0
+
+:keyboard_irq_handler
+SET [keys_changed], 1
+SET PC, POP
+
+:check_radio1
+SET PUSH, A
+SET PUSH, B
+SET PUSH, X
+SET PUSH, Y
+SET PUSH, Z
+SET PUSH, I
+
+SET A, 4
+SET B, [radio_messagetemp1]
+HWI [radio1_hwid]
+IFN I, 0
+	SET [radio_last_signal1], X
+IFN I, 0
+	SET [radio_last_angle1], Y
+SET X, [radio_messagetemp1]
+SET Y, [radio_message1]
+SET Z, I
+IFN I, 0
+	JSR mem_copy
+SET I, POP
+SET Z, POP
+SET Y, POP
+SET X, POP
+SET B, POP
+SET A, POP
+SET PC, POP
+
+:check_radio2
+SET PUSH, A
+SET PUSH, B
+SET PUSH, X
+SET PUSH, Y
+SET PUSH, Z
+SET PUSH, I
+
+SET A, 4
+SET B, [radio_messagetemp2]
+HWI [radio2_hwid]
+IFN I, 0
+	SET [radio_last_signal2], X
+IFN I, 0
+	SET [radio_last_angle2], Y
+SET X, [radio_messagetemp2]
+SET Y, [radio_message2]
+SET Z, I
+IFN I, 0
+	JSR mem_copy
+SET I, POP
+SET Z, POP
+SET Y, POP
+SET X, POP
+SET B, POP
+SET A, POP
+SET PC, POP
+
+
+
+; Strings AND Constants
+; =======================
+:str_throttle
+DAT "Thrl    %", 0
+:str_title
+DAT "MG 2.0", 0
+:str_radio1
+DAT "Radio1", 0
+:str_radio2
+DAT "Radio2", 0
+:str_radio3
+DAT "Transmit", 0
+:str_ops
+DAT "Ops", 0
+:str_sensors
+DAT "Sensors", 0
+:str_intro1
+DAT "        MG Helm 2.0 alpha5      ", 0
+:str_intro2
+DAT "   USE WASD+QE for movement.    ", 0
+:str_intro4
+DAT "   T for Throttle up, G Down    ", 0
+:str_intro5
+DAT "   F fires lasers,              ", 0
+:str_intro3
+DAT "   Arrow Keys control menus     ", 0
+:str_fuel
+DAT " Fuel: Hydrogen     L           ", 0
+:str_intro6
+DAT "Press any key to continue...", 0
+:str_channel
+DAT " Channel ", 0
+:str_signal
+DAT " Signal", 0
+:str_angle
+DAT "Angle", 0
+:str_message
+DAT "Message", 0
+
+
+
+
+; Functions
+; ==============================
+:intro_screen
+SET PUSH, Z
+SET PUSH, A
+JSR clear_screen
+SET [cursor], 0x0020
+SET Z, 0xB000
+SET A, str_intro1
+JSR write_string
+SET [cursor], 0x0080
+SET Z, 0xF800
+SET A, str_intro2
+JSR write_string 
+SET A, str_intro3
+JSR write_string
+SET A, str_intro4
+JSR write_string
+SET A, str_intro5
+JSR write_string
+SET [cursor], 0x0160
+SET Z, 0x7000
+SET A, str_intro6
+JSR write_string
+SET [key_left_down], 0
+SET [key_right_down], 0
+SET A, POP
+SET Z, POP
+SET PC, POP
+
+:helm_mode_func
+SET PUSH, Z
+SET PUSH, A
+SET [radio_mode], 0
+SET [ops_mode], 0
+SET [helm_mode], 1
+JSR clear_screen
+SET Z, 0xB000
+SET A, str_title
+JSR write_string
+SET [cursor], 0x0017
+SET Z, 0x7000
+SET A, str_throttle
+JSR write_string
+SET [cursor], 0x000C
+SET Z, 0x7000
+IFE [hcursor], 0
+	SET Z, 0x0700
+SET A, str_sensors
+JSR write_string
+SET [0x800B], 0xF03C
+SET [0x8013], 0xF03E
+SET [cursor], 0x0020
+SET Z, 0xF800
+SET A, str_heading
+JSR write_string
+SET [key_left_down], 0
+SET [key_right_down], 0
+SET A, POP
+SET Z, POP
+SET PC, POP
+
+:radio1_mode_func
+SET PUSH, Z
+SET PUSH, A
+SET [rcursor1], 0
+SET [radio_mode], 1
+SET [ops_mode], 0
+SET [helm_mode], 0
+JSR clear_screen
+SET Z, 0xB000
+SET A, str_title
+JSR write_string
+SET [cursor], 0x000E
+SET Z, 0x7000
+IFE [rcursor1], 0
+	SET Z, 0x0700
+SET A, str_radio1
+JSR write_string
+SET Z, 0x7000
+SET [0x800D], 0xF03C
+SET [0x8014], 0xF03E
+SET [cursor], 0x0020
+SET A, str_channel
+JSR write_string
+SET [cursor], 0x0040
+SET A, str_signal
+JSR write_string
+SET [cursor], 0x004F
+SET A, str_angle
+JSR write_string
+SET [cursor], 0x0068
+SET A, str_message
+JSR write_string
+SET [key_left_down], 0
+SET [key_right_down], 0
+SET A, POP
+SET Z, POP
+SET PC, POP
+
+:radio2_mode_func
+SET PUSH, Z
+SET PUSH, A
+SET [rcursor2], 0
+SET [radio_mode], 2
+SET [ops_mode], 0
+SET [helm_mode], 0
+JSR clear_screen
+SET Z, 0xB000
+SET A, str_title
+JSR write_string
+SET [cursor], 0x000E
+SET Z, 0x0700
+SET A, str_radio2
+JSR write_string
+SET Z, 0x7000
+SET [0x800D], 0xF03C
+SET [0x8014], 0xF03E
+SET [cursor], 0x0020
+SET A, str_channel
+JSR write_string
+SET [cursor], 0x0040
+SET A, str_signal
+JSR write_string
+SET [cursor], 0x004F
+SET A, str_angle
+JSR write_string
+SET [cursor], 0x0068
+SET A, str_message
+JSR write_string
+SET [key_left_down], 0
+SET [key_right_down], 0
+SET A, POP
+SET Z, POP
+SET PC, POP
+
+:radio3_mode_func
+SET PUSH, Z
+SET PUSH, A
+;SET [rcursor3], 0
+SET [radio_mode], 3
+SET [ops_mode], 0
+SET [helm_mode], 0
+JSR clear_screen
+SET Z, 0xB000
+SET A, str_title
+JSR write_string
+SET [cursor], 0x000D
+SET Z, 0x7000
+IFE [rcursor3], 0
+	SET Z, 0x0700
+SET A, str_radio3
+JSR write_string
+SET Z, 0x7000
+SET [0x800C], 0xF03C
+SET [0x8015], 0xF03E
+SET [cursor], 0x0020
+SET A, str_channel
+JSR write_string
+SET [cursor], 0x0040
+JSR write_string
+SET [0x8029], 0x7031
+SET [0x8049], 0x7032
+SET [cursor], 0x0060
+SET A, str_message
+JSR write_string
+SET [key_left_down], 0
+SET [key_right_down], 0
+SET A, POP
+SET Z, POP
+SET PC, POP
+
+:ops_mode_func
+SET PUSH, Z
+SET PUSH, A
+SET [radio_mode], 0
+SET [ops_mode], 1
+SET [helm_mode], 0
+JSR clear_screen
+SET Z, 0xB000
+SET A, str_title
+JSR write_string
+SET [cursor], 0x0040
+SET Z, 0x7000
+SET A, str_leftclamp
+JSR write_string
+SET [cursor], 0x0060
+SET A, str_rightclamp
+JSR write_string
+SET [cursor], 0x000F
+SET Z, 0x7000
+IFE [ocursor], 0
+	SET Z, 0x0700
+SET A, str_ops
+JSR write_string
+SET [0x800E], 0xF03C
+SET [0x8012], 0xF03E
+SET Z, 0x7000
+SET [cursor], 0x00A0
+SET A, str_cockpitdoor
+JSR write_string
+SET [cursor], 0x00C0
+SET A, str_leftdoor
+JSR write_string
+SET [cursor], 0x00E0
+SET A, str_rightdoor
+JSR write_string
+
+SET [cursor], 0x0140
+SET A, str_fuel
+JSR write_string
+SET [key_left_down], 0
+SET [key_right_down], 0
+SET A, POP
+SET Z, POP
+SET PC, POP
+
+:pressed_enter
+IFE [radio_mode], 1
+	IFE [rcursor1], 1
+		JSR change1B
+IFE [radio_mode], 2
+	IFE [rcursor2], 1
+		JSR change2B
+IFE [radio_mode], 1
+	IFE [rcursor1], 2
+		JSR change1C
+IFE [radio_mode], 2
+	IFE [rcursor2], 2
+		JSR change2C
+IFE [radio_mode], 3
+	IFE [rcursor3], 1
+		JSR change1B
+IFE [radio_mode], 3
+	IFE [rcursor3], 5
+		JSR change2B
+IFE [radio_mode], 3
+	IFE [rcursor3], 2
+		JSR change1C
+IFE [radio_mode], 3
+	IFE [rcursor3], 6
+		JSR change2C
+IFE [radio_mode], 3
+	IFE [rcursor3], 3
+		JSR radio1_send
+IFE [radio_mode], 3
+	IFE [rcursor3], 7
+		JSR radio2_send	
+IFE [radio_mode], 3
+	IFE [rcursor3], 9
+		SET PC, change_message
+
+SET PC, POP
+
+:ops_control
+
+IFE [key_up_down], 1
+	IFE [ops_mode], 1
+		IFE [ocursor], 0
+			SET [ocursor], 6
+IFE [key_up_down], 1
+	IFE [ops_mode], 1
+		IFG [ocursor], 0
+			SUB [ocursor], 1
+
+IFE [key_down_down], 1
+	IFE [ops_mode], 1
+		ADD [ocursor], 1
+		
+IFE [key_left_down], 1
+	IFE [ops_mode], 1
+		JSR ops_left
+
+IFE [key_right_down], 1
+	IFE [ops_mode], 1
+		JSR ops_right
+	
+IFE [ocursor], 6
+	SET [ocursor], 0
+SET PC, POP
+
+:radio_control
+
+IFE [key_up_down], 1
+	IFE [radio_mode], 1
+		IFE [rcursor1], 0
+			SET [rcursor1], 1
+		
+IFE [key_up_down], 1
+	IFE [radio_mode], 2
+		IFE [rcursor2], 0
+			SET [rcursor2], 1
+IFE [key_down_down], 1
+	IFE [radio_mode], 1
+		IFE [rcursor1], 0
+			SET [rcursor1], 1
+		
+IFE [key_down_down], 1
+	IFE [radio_mode], 2
+		IFE [rcursor2], 0
+			SET [rcursor2], 1
+IFE [key_up_down], 1
+	IFE [radio_mode], 1
+		IFG [rcursor1], 0
+			SET [rcursor1], 0
+IFE [key_up_down], 1
+	IFE [radio_mode], 2
+		IFG [rcursor2], 0
+			SET [rcursor2], 0
+
+IFE [key_down_down], 1
+	IFE [radio_mode], 1
+		IFG [rcursor1], 0
+			SET [rcursor1], 0
+IFE [key_down_down], 1
+	IFE [radio_mode], 2
+		IFG [rcursor2], 0
+			SET [rcursor2], 0
+		
+IFE [key_left_down], 1
+	IFN [radio_mode], 0
+		JSR radio_left
+
+IFE [key_right_down], 1
+	IFN [radio_mode], 0
+		JSR radio_right
+		
+IFE [key_up_down], 1
+	IFE [radio_mode], 3
+		IFE [rcursor3], 0
+			SET [rcursor3], 9
+IFE [key_down_down], 1
+	IFE [radio_mode], 3
+		IFE [rcursor3], 9
+			SET [rcursor3], 0
+IFE [key_up_down], 1
+	IFE [radio_mode], 3
+		IFL [rcursor3], 5
+			IFG [rcursor3], 0
+			 SET [rcursor3], 0
+
+IFE [key_down_down], 1
+	IFE [radio_mode], 3
+	 IFG [rcursor3], 4
+		SET [rcursor3], 9
+
+IFE [key_down_down], 1
+	IFE [radio_mode], 3
+		IFE [rcursor3], 1
+			SET [rcursor3], 5
+IFE [key_down_down], 1
+	IFE [radio_mode], 3
+		IFE [rcursor3], 2
+			SET [rcursor3], 6
+IFE [key_down_down], 1
+	IFE [radio_mode], 3
+		IFE [rcursor3], 3
+			SET [rcursor3], 7
+IFE [key_down_down], 1
+	IFE [radio_mode], 3
+		IFE [rcursor3], 4
+			SET [rcursor3], 8
+IFE [key_up_down], 1
+	IFE [radio_mode], 3
+		IFE [rcursor3], 5
+			SET [rcursor3], 1
+IFE [key_up_down], 1
+	IFE [radio_mode], 3
+		IFE [rcursor3], 6
+			SET [rcursor3], 2
+IFE [key_up_down], 1
+	IFE [radio_mode], 3
+		IFE [rcursor3], 7
+			SET [rcursor3], 3
+IFE [key_up_down], 1
+	IFE [radio_mode], 3
+		IFE [rcursor3], 9
+			SET [rcursor3], 5
+IFE [key_up_down], 1
+	IFE [radio_mode], 3
+		IFE [rcursor3], 8
+			SET [rcursor3], 4
+IFE [key_down_down], 1
+	IFE [radio_mode], 3
+		IFE [rcursor3], 0
+			SET [rcursor3], 1
+
+	
+
+SET PC, POP
+
+
+
