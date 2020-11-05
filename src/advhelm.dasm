@@ -5,6 +5,7 @@ DAT 0x0002
 :minor_version
 DAT 0x0000
 
+
 .include 'src\alpha6\drivers.inc'    ; Hardware support
 .include 'src\alpha6\thrusters.inc'  ; Thrusters and Lasers
 .include 'src\alpha6\stdio.inc'      ; Functions for writing to screen
@@ -77,7 +78,7 @@ IFE [helm_mode], 1
 SET [cursor], 0x0060
 IFE [helm_mode], 1
 IFN [fsensor_hwid], 0xffff
-	JSR display_sensors
+;	JSR display_sensors
 IFE [ops_mode], 1
 	JSR display_ops
 IFE [radio_mode], 1
@@ -708,6 +709,8 @@ IFE [key_down_down], 1
 	IFE [radio_mode], 3
 		IFE [rcursor3], 0
 			SET [rcursor3], 1
+
+
 
 
 
