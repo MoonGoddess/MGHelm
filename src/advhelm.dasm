@@ -5,27 +5,28 @@ DAT 0x0002
 :minor_version
 DAT 0x0000
 
-.include 'src\alpha6\drivers.inc'
-.include 'src\alpha6\thrusters.inc'
-.include 'src\alpha6\stdout.inc'
-.include 'src\alpha6\sensors.inc'
-.include 'src\alpha6\ops.inc'
-.include 'src\alpha6\radio.inc'
-.include 'src\alpha6\nav.inc'
 
-:helm_mode
+.include 'src\alpha6\drivers.inc'    ; Hardware support
+.include 'src\alpha6\thrusters.inc'  ; Thrusters and Lasers
+.include 'src\alpha6\stdio.inc'      ; Functions for writing to screen
+.include 'src\alpha6\sensors.inc'    ; support functions and strings for Sensor display
+.include 'src\alpha6\ops.inc'        ; functions for ops screen
+.include 'src\alpha6\radio.inc'      ; functions for radio controls
+.include 'src\alpha6\nav.inc'        ; possible upcoming nav screen
+
+:helm_mode                           ; Flag to tell the system do display the helm and sensors screen, set to true at first
 DAT 0x0001
-:radio_mode
+:radio_mode                          ; Flag to display radio modes, 1- radio 1, 2 radio 2, 3 transmit screeen
 DAT 0x0000
-:ops_mode
+:ops_mode                            ; flag to display ops mode
 DAT 0x0000
-:hcursor
+:hcursor                             ;  which line of helm mode is active, currently unused
 DAT 0x0000
-:rcursor1
+:rcursor1                            ; which line of radio1 is active, currently unused
 DAT 0x0000
-:rcursor2
+:rcursor2                            ; which line of radio2 is active, currently unused
 DAT 0x0000
-:rcursor3
+:rcursor3                            ; which line of transmit mode is active.
 DAT 0x0000
 
 
@@ -201,6 +202,12 @@ IFE A, [radio1_hwid]
 	JSR check_radio1
 IFE A, [radio2_hwid]
 	JSR check_radio2
+IFE A, [clock_hwid]
+	ADD [clocklo], 1
+IFE [clocklo], 0xffff
+	ADD [clockhi], 1
+IFE [clocklo], 0xFFFF
+	SET [clocklo], 0
 
 RFI 0
 
@@ -228,6 +235,10 @@ SET Y, [radio_message1]
 SET Z, I
 IFN I, 0
 	JSR mem_copy
+IFN I, 0
+	SET [radio_last_timelo1], [clocklo]
+IFN I, 0
+	SET [radio_last_timehi1], [clockhi]
 SET I, POP
 SET Z, POP
 SET Y, POP
@@ -256,6 +267,10 @@ SET Y, [radio_message2]
 SET Z, I
 IFN I, 0
 	JSR mem_copy
+IFN I, 0
+	SET [radio_last_timelo2], [clocklo]
+IFN I, 0
+	SET [radio_last_timehi2], [clockhi]
 SET I, POP
 SET Z, POP
 SET Y, POP
@@ -329,7 +344,7 @@ JSR write_string
 SET A, str_intro5
 JSR write_string
 SET [cursor], 0x0160
-SET Z, 0x7000
+SET Z, [fg_light_grey]
 SET A, str_intro6
 JSR write_string
 SET [key_left_down], 0
@@ -349,13 +364,13 @@ SET Z, 0xB000
 SET A, str_title
 JSR write_string
 SET [cursor], 0x0017
-SET Z, 0x7000
+SET Z, [fg_light_grey]
 SET A, str_throttle
 JSR write_string
 SET [cursor], 0x000C
-SET Z, 0x7000
+SET Z, [fg_light_grey]
 IFE [hcursor], 0
-	SET Z, 0x0700
+	SET Z, [bg_light_grey]
 SET A, str_sensors
 JSR write_string
 SET [0x800B], 0xF03C
@@ -382,12 +397,12 @@ SET Z, 0xB000
 SET A, str_title
 JSR write_string
 SET [cursor], 0x000E
-SET Z, 0x7000
+SET Z, [fg_light_grey]
 IFE [rcursor1], 0
-	SET Z, 0x0700
+	SET Z, [bg_light_grey]
 SET A, str_radio1
 JSR write_string
-SET Z, 0x7000
+SET Z, [fg_light_grey]
 SET [0x800D], 0xF03C
 SET [0x8014], 0xF03E
 SET [cursor], 0x0020
@@ -399,7 +414,7 @@ JSR write_string
 SET [cursor], 0x004F
 SET A, str_angle
 JSR write_string
-SET [cursor], 0x0068
+SET [cursor], 0x0060
 SET A, str_message
 JSR write_string
 SET [key_left_down], 0
@@ -420,10 +435,10 @@ SET Z, 0xB000
 SET A, str_title
 JSR write_string
 SET [cursor], 0x000E
-SET Z, 0x0700
+SET Z, [bg_light_grey]
 SET A, str_radio2
 JSR write_string
-SET Z, 0x7000
+SET Z, [fg_light_grey]
 SET [0x800D], 0xF03C
 SET [0x8014], 0xF03E
 SET [cursor], 0x0020
@@ -456,12 +471,12 @@ SET Z, 0xB000
 SET A, str_title
 JSR write_string
 SET [cursor], 0x000D
-SET Z, 0x7000
+SET Z, [fg_light_grey]
 IFE [rcursor3], 0
-	SET Z, 0x0700
+	SET Z, [bg_light_grey]
 SET A, str_radio3
 JSR write_string
-SET Z, 0x7000
+SET Z, [fg_light_grey]
 SET [0x800C], 0xF03C
 SET [0x8015], 0xF03E
 SET [cursor], 0x0020
@@ -491,21 +506,21 @@ SET Z, 0xB000
 SET A, str_title
 JSR write_string
 SET [cursor], 0x0040
-SET Z, 0x7000
+SET Z, [fg_light_grey]
 SET A, str_leftclamp
 JSR write_string
 SET [cursor], 0x0060
 SET A, str_rightclamp
 JSR write_string
 SET [cursor], 0x000F
-SET Z, 0x7000
+SET Z, [fg_light_grey]
 IFE [ocursor], 0
-	SET Z, 0x0700
+	SET Z, [bg_light_grey]
 SET A, str_ops
 JSR write_string
 SET [0x800E], 0xF03C
 SET [0x8012], 0xF03E
-SET Z, 0x7000
+SET Z, [fg_light_grey]
 SET [cursor], 0x00A0
 SET A, str_cockpitdoor
 JSR write_string
@@ -697,6 +712,6 @@ IFE [key_down_down], 1
 
 
 
+
+
 SET PC, POP
-
-

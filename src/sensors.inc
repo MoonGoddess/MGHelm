@@ -29,14 +29,14 @@ SET A, 1
 HWI [fsensor_hwid]
 SET [contact_size], Z
 SET [rear_contact], 0x0000
-SET Z, 0xA000
+SET Z, [fg_light_green]
 IFN A, 0x0000
 	JSR display_contact
 SET A, 1
 HWI [rsensor_hwid]
 SET [contact_size], Z
 SET [rear_contact], 0x0001
-SET Z, 0xA000
+SET Z, [fg_light_green]
 IFN A, 0x0000
 	JSR display_contact
 ADD J, 2
@@ -184,8 +184,9 @@ IFE [contact_type], 0x0003
 	IFE [contact_size], 0x000C
 		SET A, str_ship
 IFE [contact_type], 0x0003
-	IFE [contact_size], 0x0015
-		SET A, str_mystery
+	IFE B, 0x6FC3
+		IFE C, 0xFEED
+			SET A, str_mystery
 SET PC, exit_type
 
 :type_8
@@ -202,37 +203,70 @@ IFE [contact_type], 0x0108
 		IFE C, 0x74F4
 			SET A, str_outerwall
 IFE [contact_type], 0x0208
-	IFE B, 0xA503
-		IFE C, 0xD2AA
-			SET A, str_15NW
-IFE [contact_type], 0x0208
-	IFE B, 0x41A3
-		IFE C, 0x55BB
-			SET A, str_15NE
-IFE [contact_type], 0x0208
-	IFE B, 0x6106
-		IFE C, 0x423C
-			SET A, str_15SW
-IFE [contact_type], 0x0208
-	IFE B, 0xAB85
-		IFE C, 0x76AD
-			SET A, str_15SE
-IFE [contact_type], 0x0208
-	IFE B, 0x2B1C
-		IFE C, 0x6096
-			SET A, str_4SE
-IFE [contact_type], 0x0208
-	IFE B, 0x9C2E
-		IFE C, 0xEDE2
-			SET A, str_4NE
-IFE [contact_type], 0x0208
 	IFE B, 0xCB57
 		IFE C, 0xF22B
-			SET A, str_4NW
+			SET A, str_Nav1
+IFE [contact_type], 0x0208
+	IFE B, 0x334C
+		IFE C, 0x79CD
+			SET A, str_Nav2
+IFE [contact_type], 0x0208
+	IFE B, 0xE652
+		IFE C, 0x5C54
+			SET A, str_Nav3
 IFE [contact_type], 0x0208
 	IFE B, 0x68CA
 		IFE C, 0xEF38
-			SET A, str_4SW
+			SET A, str_Nav4
+IFE [contact_type], 0x0208
+	IFE B, 0x0FBB
+		IFE C, 0x964B
+			SET A, str_Nav5
+IFE [contact_type], 0x0208
+	IFE B, 0xA503
+		IFE C, 0xD2AA
+			SET A, str_Nav6
+IFE [contact_type], 0x0208
+	IFE B, 0x6106
+		IFE C, 0x4236
+			SET A, str_Nav7
+;IFE [contact_type], 0x0208
+;	IFE B, 0x0000
+;		IFE C, 0x0000
+;			SET A, str_Nav8
+;IFE [contact_type], 0x0208
+;	IFE B, 0x0000
+;		IFE C, 0x0000
+;			SET A, str_Nav9
+IFE [contact_type], 0x0208
+	IFE B, 0x41A3
+		IFE C, 0x55BB
+			SET A, str_Nav10
+IFE [contact_type], 0x0208
+	IFE B, 0xAB85
+		IFE C, 0x76AD
+			SET A, str_Nav11
+;IFE [contact_type], 0x0208
+;	IFE B, 0x0000
+;		IFE C, 0x0000
+;			SET A, str_Nav12
+IFE [contact_type], 0x0208
+	IFE B, 0x9C2E
+		IFE C, 0xEDE2
+			SET A, str_Nav13
+;IFE [contact_type], 0x0208
+;	IFE B, 0x0000
+;		IFE C, 0x0000
+;			SET A, str_Nav14
+;IFE [contact_type], 0x0208
+;	IFE B, 0x0000
+;		IFE C, 0x0000
+;			SET A, str_Nav15
+IFE [contact_type], 0x0208
+	IFE B, 0x2B1C
+		IFE C, 0x6096
+			SET A, str_Nav16
+
 SET PC, exit_type
 
 :write_range
