@@ -24,6 +24,14 @@ DAT 0x0000
 DAT 0x0000
 :radio_last_angle2
 DAT 0x0000
+:radio_last_timelo1
+DAT 0x0000
+:radio_last_timehi1
+DAT 0x0000
+:radio_last_timelo2
+DAT 0x0000
+:radio_last_timehi2
+DAT 0x0000
 
 
 ; Functions
@@ -33,37 +41,50 @@ DAT 0x0000
 
 :display_radio1
 SET [cursor], 0x000E
-SET Z, 0x7000
+SET Z, [fg_light_grey]
 IFE [rcursor1], 0
-	SET Z, 0x0700
+	SET Z, [bg_light_grey]
 SET A, str_radio1
 JSR write_string
 SET A, 2
 HWI [radio1_hwid]
-SET Z, 0xA000
+SET Z, [fg_light_green]
 IFE [rcursor1], 1
-	SET Z, 0x0F00
+	SET Z, [bg_white]
 SET [cursor], 0x002B
 SET A, B
 JSR write_hex
 ADD [cursor], 1
-SET Z, 0xA000
+SET Z, [fg_light_green]
 IFE [rcursor1], 2
-	SET Z, 0x0F00
+	SET Z, [bg_white]
 SET A, C
 JSR write_hex
 
 SET [cursor], 0x0049
 SET A, [radio_last_signal1]
-SET Z, 0xA000
+SET Z, [fg_light_green]
 JSR write_hex
 SET [cursor], 0x0058
 SET J, 3
 SET A, [radio_last_angle1]
 JSR write_angle
 
+SET B, [clocklo]
+SET C, [clockhi]
+SUB B, [radio_last_timelo1]
+SUB C, [radio_last_timehi1]
+SET [cursor], 0x0070
+SET J, 5
+SET A, B
+JSR write_decimal
+SET Z, [fg_light_grey]
+SET A, str_s_ago
+JSR write_string
+
+
 SET [cursor], 0x0080
-SET Z, 0x9000
+SET Z, [fg_light_blue]
 SET A, [radio_message1]
 JSR write_string
 
@@ -71,38 +92,53 @@ SET PC, POP
 
 :display_radio2
 SET [cursor], 0x000E
-SET Z, 0x7000
+SET Z, [fg_light_grey]
 IFE [rcursor2], 0
-	SET Z, 0x0700
+	SET Z, [bg_light_grey]
 SET A, str_radio2
 JSR write_string
 SET A, 2
 HWI [radio2_hwid]
-SET Z, 0xA000
+SET Z, [fg_light_green]
 IFE [rcursor2], 1
-	SET Z, 0x0F00
+	SET Z, [bg_white]
 SET [cursor], 0x002B
 SET A, B
 
 JSR write_hex
 ADD [cursor], 1
-SET Z, 0xA000
+SET Z, [fg_light_green]
 IFE [rcursor2], 2
-	SET Z, 0x0F00
+	SET Z, [bg_white]
 SET A, C
 JSR write_hex
 
 SET [cursor], 0x0049
 SET A, [radio_last_signal2]
-SET Z, 0xA000
+SET Z, [fg_light_green]
 JSR write_hex
 SET [cursor], 0x0058
 SET J, 3
 SET A, [radio_last_angle2]
 JSR write_angle
 
+SET B, [clocklo]
+SET C, [clockhi]
+SUB B, [radio_last_timelo2]
+SUB C, [radio_last_timehi2]
+SET [cursor], 0x0070
+SET J, 5
+SET A, B
+JSR write_decimal
+SET Z, [fg_light_grey]
+SET A, str_s_ago
+JSR write_string
+
+
 SET [cursor], 0x0080
-SET Z, 0x9000
+
+SET [cursor], 0x0080
+SET Z, [fg_light_blue]
 SET A, [radio_message2]
 JSR write_string
 
@@ -110,71 +146,71 @@ SET PC, POP
 
 :display_radio3
 SET [cursor], 0x000D
-SET Z, 0x7000
+SET Z, [fg_light_grey]
 IFE [rcursor3], 0
-	SET Z, 0x0700
+	SET Z, [bg_light_grey]
 SET A, str_radio3
 JSR write_string
 SET A, 2
 HWI [radio1_hwid]
-SET Z, 0xA000
+SET Z, [fg_light_green]
 IFE [rcursor3], 1
-	SET Z, 0x0F00
+	SET Z, [bg_white]
 SET [cursor], 0x002B
 SET A, B
 JSR write_hex
 ADD [cursor], 1
-SET Z, 0xA000
+SET Z, [fg_light_green]
 IFE [rcursor3], 2
-	SET Z, 0x0F00
+	SET Z, [bg_white]
 SET A, C
 JSR write_hex
 SET A, 2
 HWI [radio2_hwid]
-SET Z, 0xA000
+SET Z, [fg_light_green]
 IFE [rcursor3], 5
-	SET Z, 0x0F00
+	SET Z, [bg_white]
 SET [cursor], 0x004B
 SET A, B
 JSR write_hex
 ADD [cursor], 1
-SET Z, 0xA000
+SET Z, [fg_light_green]
 IFE [rcursor3], 6
-	SET Z, 0x0F00
+	SET Z, [bg_white]
 SET A, C
 JSR write_hex
 
-SET Z, 0x0700
+SET Z, [bg_light_grey]
 IFE [rcursor3], 3
-	SET Z, 0x0F00
+	SET Z, [bg_white]
 SET [cursor], 0x0035
 SET A, str_send
 JSR write_string
 ADD [cursor], 1
-SET Z, 0x0700
+SET Z, [bg_light_grey]
 IFE [rcursor3], 4
-	SET Z, 0x0F00
+	SET Z, [bg_white]
 SET A, str_repeat
 	IFE [radio_repeating1], 1
 		SET A, str_stop
 JSR write_string
 
-SET Z, 0x0700
+SET Z, [bg_light_grey]
 IFE [rcursor3], 7
-	SET Z, 0x0F00
+	SET Z, [bg_white]
 SET [cursor], 0x0055
 SET A, str_send
 JSR write_string
 ADD [cursor], 1
-SET Z, 0x0700
+SET Z, [bg_light_grey]
 IFE [rcursor3], 8
-	SET Z, 0x0F00
+	SET Z, [bg_white]
 SET A, str_repeat
 	IFE [radio_repeating2], 1
 		SET A, str_stop
 JSR write_string
 SET [cursor], 0x0080
-SET Z, 0x0700
+SET Z, [bg_light_grey]
 IFE [rcursor3], 9
 	SET Z, 0x0F00
 SET A, [sending_message]
@@ -302,7 +338,7 @@ SET [X], 0x0000
 ADD I, 1
 IFN I, [sending_length]
 	SET PC, change_message_loop_1
-SET Z, 0xA000
+SET Z, [fg_light_green]
 SET [video_ram], 0x8400
 SET A, 0
 SET B, [video_ram]
@@ -438,3 +474,5 @@ DAT " STOP ", 0
 DAT "XXXXXX", 0
 :str_sending_message
 DAT "SOS Send Help", 0
+:str_s_ago
+DAT "s ago.", 0

@@ -23,6 +23,11 @@ DAT 0x8000
 DAT 0x0000
 :doors_hwid
 DAT 0x0000
+:clocklo
+DAT 0x0000
+:clockhi
+DAT 0x0000
+
 
 
 ; Check and setup monitor/keyboard
@@ -96,11 +101,14 @@ SET B, [radio2_hwid]
 SET A, 0
 HWI [radio2_hwid]
 
-;IFE [clock_hwid], 0xffff
-;	SET PC, POP
-;SET B, 60           ; tick once per second
-;SET A, 0
-;HWI [clock_hwid]
+IFE [clock_hwid], 0xffff
+	SET PC, POP
+SET B, 60           ; tick once per second
+SET A, 0
+HWI [clock_hwid]
+SET B, [clock_hwid]
+SET A, 2
+HWI [clock_hwid]
 SET PC, POP
 
 ; Strings AND Constants
