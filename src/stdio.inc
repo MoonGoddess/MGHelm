@@ -1,13 +1,8 @@
 ; Memory
 ; ===================
-:cursor
+:screen_cursor
 DAT 0x0000
-:termwidth
-DAT 0x0020
-:termheight
-DAT 0x000C
-:negative_flag
-DAT 0x0000
+
 
 
 
@@ -17,7 +12,7 @@ DAT 0x0000
 
 ; Write Hex Function 
 ; writes a to the screen as hex.  Set A to the word, and Z to the color
-; uses video_ram for LEM1802 data location, and cursor for location in that memory
+; uses video_ram for LEM1802 data location, and screen_cursor for location in that memory
 ; returns nothing.
 
 :write_hex
@@ -45,7 +40,7 @@ SET PC, POP
 ; Write Decimal Function 
 ; writes a word to the screen as decimal integer.  Set A to the hex, and Z to the color, 
 ; J for the number of spaces to clear, defaults to 5 if unset.
-; uses video_ram for LEM1802 data location, and cursor for location in that memory
+; uses video_ram for LEM1802 data location, and screen_cursor for location in that memory
 ; returns nothing.
 
 :write_decimal
@@ -60,7 +55,7 @@ IFG J, 5
 	SET J, 5
 SET Y, 1
 SET X, [video_ram]
-ADD X, [cursor]
+ADD X, [screen_cursor]
 
 :clear_previous_loop
 ADD X, 1
@@ -68,7 +63,7 @@ SET [X], 0x0000
 ADD Y, 1
 IFN Y, J
 	SET PC, clear_previous_loop
-ADD [cursor], J
+ADD [screen_cursor], J
 SET I, 1
 SET C, A
 :decimalloop
@@ -76,12 +71,12 @@ SET B, C
 MOD B, 10
 SET A, B
 JSR to_string
-SUB [cursor], 2
+SUB [screen_cursor], 2
 DIV C, 10
 ADD I, 1
 IFN C, 0
 	SET PC, decimalloop
-ADD [cursor], I
+ADD [screen_cursor], I
 SET X, POP
 SET Y, POP
 SET I, POP
@@ -93,14 +88,14 @@ SET PC, POP
 
 ; ; to_string Function 
 ; Internal function for write_hex and write_decimal  Set A to the hex, and Z to the color, 
-; uses video_ram for LEM1802 data location, and cursor for location in that memory
+; uses video_ram for LEM1802 data location, and screen_cursor for location in that memory
 ; returns nothing.
 
 
 :to_string
 SET PUSH, X
 SET PUSH, Y
-SET X, [cursor]
+SET X, [screen_cursor]
 ADD X, [video_ram]
 IFE A, 0x0000
 	SET Y, 0x0030
@@ -138,7 +133,7 @@ IFE Z, 0x0000
 	SET Z, 0xA000
 BOR Y, Z
 SET [X], Y
-ADD [cursor], 0x0001
+ADD [screen_cursor], 0x0001
 SET Y, POP
 SET X, POP
 SET PC, POP
@@ -147,13 +142,28 @@ SET PC, POP
 
 ; Write_Blank_Line Function 
 ; writes a word to the screen as decimal.  Needs no Registers 
-; uses video_ram for LEM1802 data location, and cursor for location in that memory
+; uses video_ram for LEM1802 data location, and screen_cursor for location in that memory
 ; returns nothing.
 
 :write_blank_line
 SET PUSH, A
+;SET PUSH, I
+;SET PUSH, X
+
 SET A, str_blank_line
 JSR write_string
+;SET I, 0
+;;SET X, [video_ram]
+;ADD X, [screen_cursor]
+;:write_blank_line_loop
+;ADD X, I
+;SET [X], 0x0020
+;ADD I, 1
+;IFN I, [termwidth]
+;	SET PC, write_blank_line_loop
+;ADD [screen_cursor], [termwidth]
+;SET X, POP
+;SET I, POP
 SET A, POP
 SET PC, POP
 ; =========
@@ -164,14 +174,15 @@ SET PC, POP
 ; returns nothing.
 
 :clear_screen
-SET [cursor], 0x0000
+SET [screen_cursor], 0x0000
 SET PUSH, I
 SET PUSH, J
 SET I, [video_ram]
-SET J, 0x180
+SET J, [termwidth]
+MUL J, [termheight]
 ADD J, I
 :clear_screen_loop
-SET [I], 0x20
+SET [I], 0x0020
 ADD I, 1
 IFN I, J
 	SET PC, clear_screen_loop
@@ -183,7 +194,7 @@ SET PC, POP
 
 ; Write_String Function 
 ; writes a zero terminated string to the screen..  Set A as pointer to the string location, and Z to the color, 
-; uses video_ram for LEM1802 data location, and cursor for location in that memory
+; uses video_ram for LEM1802 data location, and screen_cursor for location in that memory
 ; returns nothing.
 
 :write_string
@@ -191,7 +202,7 @@ SET PUSH, I
 SET PUSH, J
 SET PUSH, B
 SET PUSH, X
-SET X, [cursor]
+SET X, [screen_cursor]
 ADD X, [video_ram]
 SET I, X
 SET J, A
@@ -203,7 +214,7 @@ IFE Z, 0x0000
 SET [I], B
 ADD I, 1
 ADD J, 1
-ADD [cursor], 0x0001
+ADD [screen_cursor], 0x0001
 IFN [J], 0
 	SET PC, write_string_loop
 SET X, POP
@@ -215,22 +226,22 @@ SET PC, POP
 ; End write_string
 
 ; New Line function
-; Resets cursor to the begining of the next line.
+; Resets screen_cursor to the begining of the next line.
 ; Moves to top of screen without clearing if used at bottom
 ; touches no registers.
 
 :newline
 SET PUSH, B
 SET PUSH, C
-SET C, [cursor]
+SET C, [screen_cursor]
 MOD C, 32
 SET B, 32
 SUB B, C
 IFE C, 0
 	SET B, 0
-ADD [cursor], B
-IFG [cursor], 0x0179
-	SET [cursor], 0x0000
+ADD [screen_cursor], B
+IFG [screen_cursor], 0x0179
+	SET [screen_cursor], 0x0000
 SET C, POP
 SET B, POP
 SET PC, POP
@@ -285,7 +296,7 @@ SET [video_ram], 0x8200
 SET A, 0
 SET B, [video_ram]
 HWI [screen_hwid]
-SET [cursor], 0x004E
+SET [screen_cursor], 0x004E
 SET A, 0x0000
 JSR write_hex
 SET A, 3
@@ -350,7 +361,7 @@ IFE C, 0x0066
 IFE X, 0xffff
 	SET PC, get_hex_loop
 BOR B, X
-SET [cursor], 0x004E
+SET [screen_cursor], 0x004E
 SET A, B
 JSR write_hex
 ADD I, 1
@@ -378,6 +389,10 @@ SET PC, POP
 
 ; Strings AND Constants
 ; =======================
+:termwidth
+DAT 0x0020
+:termheight
+DAT 0x000C
 :str_blank_line
 DAT "                                ", 0
 :str_gap

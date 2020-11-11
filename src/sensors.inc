@@ -1,8 +1,6 @@
 ; Memory
 ; ==============================
 
-:temp_a
-DAT 0x0000
 :contact_type
 DAT 0x0000
 :contact_size
@@ -18,7 +16,7 @@ DAT 0x0000
 SET PUSH, A
 SET PUSH, I
 SET PUSH, Z
-SET [cursor], 0x0040
+SET [screen_cursor], 0x0040
 SET I, 0
 SET J, 0
 SET A, 0
@@ -63,17 +61,17 @@ SET PC, POP
 :display_contact
 SET [contact_type], A
 JSR write_type
-;ADD [cursor], 1
+;ADD [screen_cursor], 1
 SET A, B
 JSR write_hex
 SET A, C
 JSR write_hex
-ADD [cursor], 1
+ADD [screen_cursor], 1
 SET A, Y
 DIV A, 0x0021
 SET J, 4
 JSR write_range
-;ADD [cursor], 1
+;ADD [screen_cursor], 1
 SET J, 2
 SET A, X
 
@@ -89,30 +87,17 @@ SET PUSH, X
 SET PUSH, Z
 SET PUSH, B
 
-SET X, [cursor]
+SET X, [screen_cursor]
 ADD X, [video_ram]
-SET B, A
-AND B, 0x8000
-IFE B, 0x8000
-	SET PC, angle_negative
-IFE B, 0x0000
-	SET PC, angle_positive
-
-
-:angle_negative
-SET [X], 0xA02D
-SET B, A
-XOR B, 0xFFFF
-ADD B, 1
-SET PC, exit_angle
-
-:angle_positive
-SET [X], 0xA020
-SET B, A
-:exit_angle
-DIV B, 0x00B6
-
-SET A, B
+IFB A, 0x8000
+	SET [X], 0xA02D
+IFC A, 0x8000
+	SET [X], 0xA020
+IFB A, 0x8000
+	XOR A, 0xFFFF
+IFB A, 0x8000
+	ADD A, 1
+DIV A, 0x00B6
 JSR write_decimal
 
 SET B, POP
@@ -122,24 +107,26 @@ SET PC, POP
 
 :write_type
 SET PUSH, Z
+SET PUSH, B
 SET A, 0xffff
-SET [temp_a], [contact_type]
-AND [temp_a], 0x00FF
-IFE [temp_a], 0x0001
+SET B, [contact_type]
+AND B, 0x00FF
+IFE B, 0x0001
 	SET PC, type_1
-IFE [temp_a], 0x0002
+IFE B, 0x0002
 	SET PC, type_2
-IFE [temp_a], 0x0003
+IFE B, 0x0003
 	SET PC, type_3
-IFE [temp_a], 0x0008
+IFE B, 0x0008
 	SET PC, type_8
-IFE [temp_a], 0x000A
+IFE B, 0x000A
 	SET A, str_typeA
 :exit_type
 IFE A, 0xffff
 	SET A, str_unknown
 
 JSR write_string
+SET B, POP
 SET Z, POP
 SET PC, POP
 
@@ -177,14 +164,14 @@ SET PC, exit_type
 IFE [contact_type], 0x0003
 	SET A, str_manmade
 IFE [contact_type], 0x0003
-	IFE B, 0xACF7
+	IFE PEEK, 0xACF7
 		IFE C, 0x0045
 			SET A, str_station
 IFE [contact_type], 0x0003
 	IFE [contact_size], 0x000C
 		SET A, str_ship
 IFE [contact_type], 0x0003
-	IFE B, 0x6FC3
+	IFE PEEK, 0x6FC3
 		IFE C, 0xFEED
 			SET A, str_mystery
 SET PC, exit_type
@@ -199,71 +186,71 @@ IFE [contact_type], 0x0108
 IFE [contact_type], 0x0208
 	SET A, str_type208
 IFE [contact_type], 0x0108
-	IFE B, 0x2513
+	IFE PEEK, 0x2513
 		IFE C, 0x74F4
 			SET A, str_outerwall
 IFE [contact_type], 0x0208
-	IFE B, 0xCB57
+	IFE PEEK, 0xCB57
 		IFE C, 0xF22B
 			SET A, str_Nav1
 IFE [contact_type], 0x0208
-	IFE B, 0x334C
+	IFE PEEK, 0x334D
 		IFE C, 0x79CD
 			SET A, str_Nav2
 IFE [contact_type], 0x0208
-	IFE B, 0xE652
+	IFE PEEK, 0xE652
 		IFE C, 0x5C54
 			SET A, str_Nav3
 IFE [contact_type], 0x0208
-	IFE B, 0x68CA
+	IFE PEEK, 0x68CA
 		IFE C, 0xEF38
 			SET A, str_Nav4
 IFE [contact_type], 0x0208
-	IFE B, 0x0FBB
+	IFE PEEK, 0x0FBB
 		IFE C, 0x964B
 			SET A, str_Nav5
 IFE [contact_type], 0x0208
-	IFE B, 0xA503
+	IFE PEEK, 0xA503
 		IFE C, 0xD2AA
 			SET A, str_Nav6
 IFE [contact_type], 0x0208
-	IFE B, 0x6106
-		IFE C, 0x4236
+	IFE PEEK, 0x6106
+		IFE C, 0x423C
 			SET A, str_Nav7
-;IFE [contact_type], 0x0208
-;	IFE B, 0x0000
-;		IFE C, 0x0000
-;			SET A, str_Nav8
-;IFE [contact_type], 0x0208
-;	IFE B, 0x0000
-;		IFE C, 0x0000
-;			SET A, str_Nav9
 IFE [contact_type], 0x0208
-	IFE B, 0x41A3
+	IFE PEEK, 0xE566
+		IFE C, 0x40F1
+			SET A, str_Nav8
+IFE [contact_type], 0x0208
+	IFE PEEK, 0x3033
+		IFE C, 0x3FF1
+			SET A, str_Nav9
+IFE [contact_type], 0x0208
+	IFE PEEK, 0x41A3
 		IFE C, 0x55BB
 			SET A, str_Nav10
 IFE [contact_type], 0x0208
-	IFE B, 0xAB85
+	IFE PEEK, 0xAB85
 		IFE C, 0x76AD
 			SET A, str_Nav11
-;IFE [contact_type], 0x0208
-;	IFE B, 0x0000
-;		IFE C, 0x0000
-;			SET A, str_Nav12
 IFE [contact_type], 0x0208
-	IFE B, 0x9C2E
+	IFE PEEK, 0x92C4
+		IFE C, 0xB6D3
+			SET A, str_Nav12
+IFE [contact_type], 0x0208
+	IFE PEEK, 0x9C2E
 		IFE C, 0xEDE2
 			SET A, str_Nav13
-;IFE [contact_type], 0x0208
-;	IFE B, 0x0000
-;		IFE C, 0x0000
-;			SET A, str_Nav14
-;IFE [contact_type], 0x0208
-;	IFE B, 0x0000
-;		IFE C, 0x0000
-;			SET A, str_Nav15
 IFE [contact_type], 0x0208
-	IFE B, 0x2B1C
+	IFE PEEK, 0x93EA
+		IFE C, 0x524B
+			SET A, str_Nav14
+IFE [contact_type], 0x0208
+	IFE PEEK, 0xE4BE
+		IFE C, 0xFE36
+			SET A, str_Nav15
+IFE [contact_type], 0x0208
+	IFE PEEK, 0x2B1C
 		IFE C, 0x6096
 			SET A, str_Nav16
 
@@ -274,28 +261,28 @@ SET PUSH, X
 SET PUSH, J
 SET J, 4
 JSR write_decimal
-SET X, [cursor]
+SET X, [screen_cursor]
 ADD X, [video_ram]
 SET [X], 0xA06D
 ADD X, 1
-ADD [cursor], 1
+ADD [screen_cursor], 1
 IFE [rear_contact], 0
 	SET [X], 0xB05E
 IFE [rear_contact], 1
 	SET [X], 0xC076
-ADD [cursor], 2
+ADD [screen_cursor], 2
 SET J, POP
 SET X, POP
 SET PC, POP
 
 :write_size
 SET PUSH, X
-SET X, [cursor]
+SET X, [screen_cursor]
 ADD X, [video_ram]
 SET [X], 0xA06D
-SUB [cursor], 1
+SUB [screen_cursor], 1
 JSR write_decimal
-ADD [cursor], 1
+ADD [screen_cursor], 1
 SET X, POP
 SET PC, POP
 
