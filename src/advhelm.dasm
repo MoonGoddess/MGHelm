@@ -6,13 +6,6 @@ DAT 0x0002
 DAT 0x0000
 
 
-.include 'src\alpha6\drivers.inc'    ; Hardware support
-.include 'src\alpha6\thrusters.inc'  ; Thrusters and Lasers
-.include 'src\alpha6\stdio.inc'      ; Functions for writing to screen
-.include 'src\alpha6\sensors.inc'    ; support functions and strings for Sensor display
-.include 'src\alpha6\ops.inc'        ; functions for ops screen
-.include 'src\alpha6\radio.inc'      ; functions for radio controls
-.include 'src\alpha6\nav.inc'        ; possible upcoming nav screen
 
 :helm_mode                           ; Flag to tell the system do display the helm and sensors screen, set to true at first
 DAT 0x0001
@@ -71,14 +64,14 @@ JSR helm_mode_func
 
 
 :wait_for_key_loop
-SET [cursor], 27
+SET [screen_cursor], 27
 SET J, 3
 IFE [helm_mode], 1
 	JSR write_throttle
-SET [cursor], 0x0060
+SET [screen_cursor], 0x0060
 IFE [helm_mode], 1
 IFN [fsensor_hwid], 0xffff
-;	JSR display_sensors
+	JSR display_sensors
 IFE [ops_mode], 1
 	JSR display_ops
 IFE [radio_mode], 1
@@ -87,6 +80,10 @@ IFE [radio_mode], 2
 	JSR display_radio2
 IFE [radio_mode], 3
 	JSR display_radio3
+IFE [radio_repeating1], 1
+	JSR radio1_repeat 
+IFE [radio_repeating2], 1
+	JSR radio2_repeat 
 
 
 IFE [keys_changed], 0
@@ -203,13 +200,19 @@ IFE A, [radio1_hwid]
 IFE A, [radio2_hwid]
 	JSR check_radio2
 IFE A, [clock_hwid]
-	ADD [clocklo], 1
+	JSR clock_IRQ_handler
+
+RFI 0
+
+:clock_IRQ_handler
+IFE [clocklo], 0xFFFF
+	SET [clocklo], 0
+ADD [clocklo], 1
 IFE [clocklo], 0xffff
 	ADD [clockhi], 1
 IFE [clocklo], 0xFFFF
 	SET [clocklo], 0
-
-RFI 0
+SET PC, POP
 
 :keyboard_irq_handler
 SET [keys_changed], 1
@@ -298,7 +301,7 @@ DAT "Ops", 0
 :str_sensors
 DAT "Sensors", 0
 :str_intro1
-DAT "        MG Helm 2.0 alpha5      ", 0
+DAT "        MG Helm 2.0 alpha7      ", 0
 :str_intro2
 DAT "   USE WASD+QE for movement.    ", 0
 :str_intro4
@@ -329,11 +332,11 @@ DAT "Message", 0
 SET PUSH, Z
 SET PUSH, A
 JSR clear_screen
-SET [cursor], 0x0020
+SET [screen_cursor], 0x0020
 SET Z, 0xB000
 SET A, str_intro1
 JSR write_string
-SET [cursor], 0x0080
+SET [screen_cursor], 0x0080
 SET Z, 0xF800
 SET A, str_intro2
 JSR write_string
@@ -343,7 +346,7 @@ SET A, str_intro4
 JSR write_string
 SET A, str_intro5
 JSR write_string
-SET [cursor], 0x0160
+SET [screen_cursor], 0x0160
 SET Z, [fg_light_grey]
 SET A, str_intro6
 JSR write_string
@@ -363,11 +366,11 @@ JSR clear_screen
 SET Z, 0xB000
 SET A, str_title
 JSR write_string
-SET [cursor], 0x0017
+SET [screen_cursor], 0x0017
 SET Z, [fg_light_grey]
 SET A, str_throttle
 JSR write_string
-SET [cursor], 0x000C
+SET [screen_cursor], 0x000C
 SET Z, [fg_light_grey]
 IFE [hcursor], 0
 	SET Z, [bg_light_grey]
@@ -375,7 +378,7 @@ SET A, str_sensors
 JSR write_string
 SET [0x800B], 0xF03C
 SET [0x8013], 0xF03E
-SET [cursor], 0x0020
+SET [screen_cursor], 0x0020
 SET Z, 0xF800
 SET A, str_heading
 JSR write_string
@@ -396,7 +399,7 @@ JSR clear_screen
 SET Z, 0xB000
 SET A, str_title
 JSR write_string
-SET [cursor], 0x000E
+SET [screen_cursor], 0x000E
 SET Z, [fg_light_grey]
 IFE [rcursor1], 0
 	SET Z, [bg_light_grey]
@@ -405,16 +408,16 @@ JSR write_string
 SET Z, [fg_light_grey]
 SET [0x800D], 0xF03C
 SET [0x8014], 0xF03E
-SET [cursor], 0x0020
+SET [screen_cursor], 0x0020
 SET A, str_channel
 JSR write_string
-SET [cursor], 0x0040
+SET [screen_cursor], 0x0040
 SET A, str_signal
 JSR write_string
-SET [cursor], 0x004F
+SET [screen_cursor], 0x004F
 SET A, str_angle
 JSR write_string
-SET [cursor], 0x0060
+SET [screen_cursor], 0x0060
 SET A, str_message
 JSR write_string
 SET [key_left_down], 0
@@ -434,23 +437,23 @@ JSR clear_screen
 SET Z, 0xB000
 SET A, str_title
 JSR write_string
-SET [cursor], 0x000E
+SET [screen_cursor], 0x000E
 SET Z, [bg_light_grey]
 SET A, str_radio2
 JSR write_string
 SET Z, [fg_light_grey]
 SET [0x800D], 0xF03C
 SET [0x8014], 0xF03E
-SET [cursor], 0x0020
+SET [screen_cursor], 0x0020
 SET A, str_channel
 JSR write_string
-SET [cursor], 0x0040
+SET [screen_cursor], 0x0040
 SET A, str_signal
 JSR write_string
-SET [cursor], 0x004F
+SET [screen_cursor], 0x004F
 SET A, str_angle
 JSR write_string
-SET [cursor], 0x0068
+SET [screen_cursor], 0x0060
 SET A, str_message
 JSR write_string
 SET [key_left_down], 0
@@ -470,7 +473,7 @@ JSR clear_screen
 SET Z, 0xB000
 SET A, str_title
 JSR write_string
-SET [cursor], 0x000D
+SET [screen_cursor], 0x000D
 SET Z, [fg_light_grey]
 IFE [rcursor3], 0
 	SET Z, [bg_light_grey]
@@ -479,14 +482,14 @@ JSR write_string
 SET Z, [fg_light_grey]
 SET [0x800C], 0xF03C
 SET [0x8015], 0xF03E
-SET [cursor], 0x0020
+SET [screen_cursor], 0x0020
 SET A, str_channel
 JSR write_string
-SET [cursor], 0x0040
+SET [screen_cursor], 0x0040
 JSR write_string
 SET [0x8029], 0x7031
 SET [0x8049], 0x7032
-SET [cursor], 0x0060
+SET [screen_cursor], 0x0060
 SET A, str_message
 JSR write_string
 SET [key_left_down], 0
@@ -505,14 +508,14 @@ JSR clear_screen
 SET Z, 0xB000
 SET A, str_title
 JSR write_string
-SET [cursor], 0x0040
+SET [screen_cursor], 0x0040
 SET Z, [fg_light_grey]
 SET A, str_leftclamp
 JSR write_string
-SET [cursor], 0x0060
+SET [screen_cursor], 0x0060
 SET A, str_rightclamp
 JSR write_string
-SET [cursor], 0x000F
+SET [screen_cursor], 0x000F
 SET Z, [fg_light_grey]
 IFE [ocursor], 0
 	SET Z, [bg_light_grey]
@@ -521,17 +524,17 @@ JSR write_string
 SET [0x800E], 0xF03C
 SET [0x8012], 0xF03E
 SET Z, [fg_light_grey]
-SET [cursor], 0x00A0
+SET [screen_cursor], 0x00A0
 SET A, str_cockpitdoor
 JSR write_string
-SET [cursor], 0x00C0
+SET [screen_cursor], 0x00C0
 SET A, str_leftdoor
 JSR write_string
-SET [cursor], 0x00E0
+SET [screen_cursor], 0x00E0
 SET A, str_rightdoor
 JSR write_string
 
-SET [cursor], 0x0140
+SET [screen_cursor], 0x0140
 SET A, str_fuel
 JSR write_string
 SET [key_left_down], 0
@@ -572,10 +575,46 @@ IFE [radio_mode], 3
 	IFE [rcursor3], 7
 		JSR radio2_send
 IFE [radio_mode], 3
+	IFE [rcursor3], 4
+		IFE [radio_repeating1], 0
+			SET PC, radio1_repeatswitch_on
+IFE [radio_mode], 3
+	IFE [rcursor3], 8
+		IFE [radio_repeating2], 0
+			SET PC, radio2_repeatswitch_on
+IFE [radio_mode], 3
+	IFE [rcursor3], 4
+		IFE [radio_repeating1], 1
+			SET PC, radio1_repeatswitch_off
+IFE [radio_mode], 3
+	IFE [rcursor3], 8
+		IFE [radio_repeating2], 1
+			SET PC, radio2_repeatswitch_off
+IFE [radio_mode], 3
 	IFE [rcursor3], 9
 		SET PC, change_message
-
+SET [key_enter_down], 0
 SET PC, POP
+:radio1_repeatswitch_on
+SET [radio_repeating1], 1
+SET [key_enter_down], 0
+SET PC, POP
+
+:radio2_repeatswitch_on
+SET [radio_repeating2], 1
+SET [key_enter_down], 0
+SET PC, POP
+
+:radio1_repeatswitch_off
+SET [radio_repeating1], 0
+SET [key_enter_down], 0
+SET PC, POP
+
+:radio2_repeatswitch_off
+SET [radio_repeating2], 0
+SET [key_enter_down], 0
+SET PC, POP
+
 
 :ops_control
 
@@ -633,14 +672,14 @@ IFE [key_up_down], 1
 		IFG [rcursor2], 0
 			SET [rcursor2], 0
 
-IFE [key_down_down], 1
-	IFE [radio_mode], 1
-		IFG [rcursor1], 0
-			SET [rcursor1], 0
-IFE [key_down_down], 1
-	IFE [radio_mode], 2
-		IFG [rcursor2], 0
-			SET [rcursor2], 0
+;IFE [key_down_down], 1
+;	IFE [radio_mode], 1
+;		IFG [rcursor1], 0
+;			SET [rcursor1], 0
+;IFE [key_down_down], 1
+;	IFE [radio_mode], 2
+;		IFG [rcursor2], 0
+;			SET [rcursor2], 0
 
 IFE [key_left_down], 1
 	IFN [radio_mode], 0
@@ -712,6 +751,20 @@ IFE [key_down_down], 1
 
 
 
-
-
 SET PC, POP
+
+; Control should never end up here
+DAT 0x0000
+DAT 0x0000
+DAT 0x0000
+DAT 0x0000
+DAT 0x0000
+
+
+.include 'MGhelm\src\drivers.inc'    ; Hardware support
+.include 'MGhelm\src\thrusters.inc'  ; Thrusters and Lasers
+.include 'MGhelm\src\stdio.inc'      ; Functions for writing to screen
+.include 'MGhelm\src\sensors.inc'    ; support functions and strings for Sensor display
+.include 'MGhelm\src\ops.inc'        ; functions for ops screen
+.include 'MGhelm\src\radio.inc'      ; functions for radio controls
+.include 'MGhelm\src\nav.inc'        ; possible upcoming nav screen

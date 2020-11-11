@@ -5,14 +5,14 @@ DAT 0x1600
 
 
 :display_ops
-SET [cursor], 0x000F
+SET [screen_cursor], 0x000F
 SET Z, [fg_light_grey]
 IFE [ocursor], 0
 	SET Z, [bg_light_grey]
 SET A, str_ops
 JSR write_string
 SET Z, [fg_light_green]
-SET [cursor], 0x0150
+SET [screen_cursor], 0x0150
 SET A, [fuel_level]
 JSR write_hex
 SET PUSH, I
@@ -26,7 +26,7 @@ IFE B, 1
 	SET A, str_pulling
 IFE B, 2
 	SET A, str_locked
-SET [cursor], 0x0050
+SET [screen_cursor], 0x0050
 SET Z, [fg_light_green]
 IFE [ocursor], 1
 	SET Z, 0xA700 ; fg_light_green bg_light_grey
@@ -42,7 +42,7 @@ IFE B, 1
 	SET A, str_pulling
 IFE B, 2
 	SET A, str_locked
-SET [cursor], 0x0070
+SET [screen_cursor], 0x0070
 SET Z, [fg_light_green]
 IFE [ocursor], 2
 	SET Z, 0xA700 ; fg_light_green bg_light_grey
@@ -60,7 +60,7 @@ IFE B, 2
 	SET A, str_auto
 IFE B, 3
 	SET A, str_open
-SET [cursor], 0x00B0
+SET [screen_cursor], 0x00B0
 SET Z, [fg_light_green]
 IFE [ocursor], 3
 	SET Z, 0xA700  ; fg_light_green bg_light_grey
@@ -78,7 +78,7 @@ IFE B, 2
 	SET A, str_auto
 IFE B, 3
 	SET A, str_open
-SET [cursor], 0x00D0
+SET [screen_cursor], 0x00D0
 SET Z, [fg_light_green]
 IFE [ocursor], 4
 	SET Z, 0xA700 ; fg_light_green bg_light_grey
@@ -96,7 +96,7 @@ IFE B, 2
 	SET A, str_auto
 IFE B, 3
 	SET A, str_open
-SET [cursor], 0x00F0
+SET [screen_cursor], 0x00F0
 SET Z, [fg_light_green]
 IFE [ocursor], 5
 	SET Z, 0xA700   ; fg_light_green bg_light_grey
