@@ -114,7 +114,7 @@ MUL A, 100
 DIV A, 255
 JSR write_decimal
 SET X, [video_ram]
-ADD X, [cursor]
+ADD X, [screen_cursor]
 SET X, 0x7025
 SET Z, POP
 SET A, POP

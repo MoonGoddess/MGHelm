@@ -40,7 +40,7 @@ DAT 0x0000
 
 
 :display_radio1
-SET [cursor], 0x000E
+SET [screen_cursor], 0x000E
 SET Z, [fg_light_grey]
 IFE [rcursor1], 0
 	SET Z, [bg_light_grey]
@@ -51,21 +51,21 @@ HWI [radio1_hwid]
 SET Z, [fg_light_green]
 IFE [rcursor1], 1
 	SET Z, [bg_white]
-SET [cursor], 0x002B
+SET [screen_cursor], 0x002B
 SET A, B
 JSR write_hex
-ADD [cursor], 1
+ADD [screen_cursor], 1
 SET Z, [fg_light_green]
 IFE [rcursor1], 2
 	SET Z, [bg_white]
 SET A, C
 JSR write_hex
 
-SET [cursor], 0x0049
+SET [screen_cursor], 0x0049
 SET A, [radio_last_signal1]
 SET Z, [fg_light_green]
 JSR write_hex
-SET [cursor], 0x0058
+SET [screen_cursor], 0x0058
 SET J, 3
 SET A, [radio_last_angle1]
 JSR write_angle
@@ -74,24 +74,22 @@ SET B, [clocklo]
 SET C, [clockhi]
 SUB B, [radio_last_timelo1]
 SUB C, [radio_last_timehi1]
-SET [cursor], 0x0070
-SET J, 5
-SET A, B
-JSR write_decimal
-SET Z, [fg_light_grey]
-SET A, str_s_ago
-JSR write_string
+SET [screen_cursor], 0x0070
 
-
-SET [cursor], 0x0080
-SET Z, [fg_light_blue]
+IFN [radio_last_timelo1], 0
+	JSR write_time
+IFG [radio_last_timehi1], 0
+	IFE [radio_last_timelo1], 0
+		JSR write_time
+SET [screen_cursor], 0x0080
+SET Z, [fg_white]
 SET A, [radio_message1]
 JSR write_string
 
 SET PC, POP
 
 :display_radio2
-SET [cursor], 0x000E
+SET [screen_cursor], 0x000E
 SET Z, [fg_light_grey]
 IFE [rcursor2], 0
 	SET Z, [bg_light_grey]
@@ -102,22 +100,22 @@ HWI [radio2_hwid]
 SET Z, [fg_light_green]
 IFE [rcursor2], 1
 	SET Z, [bg_white]
-SET [cursor], 0x002B
+SET [screen_cursor], 0x002B
 SET A, B
 
 JSR write_hex
-ADD [cursor], 1
+ADD [screen_cursor], 1
 SET Z, [fg_light_green]
 IFE [rcursor2], 2
 	SET Z, [bg_white]
 SET A, C
 JSR write_hex
 
-SET [cursor], 0x0049
+SET [screen_cursor], 0x0049
 SET A, [radio_last_signal2]
 SET Z, [fg_light_green]
 JSR write_hex
-SET [cursor], 0x0058
+SET [screen_cursor], 0x0058
 SET J, 3
 SET A, [radio_last_angle2]
 JSR write_angle
@@ -126,26 +124,25 @@ SET B, [clocklo]
 SET C, [clockhi]
 SUB B, [radio_last_timelo2]
 SUB C, [radio_last_timehi2]
-SET [cursor], 0x0070
-SET J, 5
-SET A, B
-JSR write_decimal
-SET Z, [fg_light_grey]
-SET A, str_s_ago
-JSR write_string
+SET [screen_cursor], 0x0070
 
+IFN [radio_last_timelo2], 0
+	JSR write_time
+IFG [radio_last_timehi2], 0
+	IFE [radio_last_timelo2], 0
+		JSR write_time
 
-SET [cursor], 0x0080
+SET [screen_cursor], 0x0080
 
-SET [cursor], 0x0080
-SET Z, [fg_light_blue]
+SET [screen_cursor], 0x0080
+SET Z, [fg_white]
 SET A, [radio_message2]
 JSR write_string
 
 SET PC, POP
 
 :display_radio3
-SET [cursor], 0x000D
+SET [screen_cursor], 0x000D
 SET Z, [fg_light_grey]
 IFE [rcursor3], 0
 	SET Z, [bg_light_grey]
@@ -156,10 +153,10 @@ HWI [radio1_hwid]
 SET Z, [fg_light_green]
 IFE [rcursor3], 1
 	SET Z, [bg_white]
-SET [cursor], 0x002B
+SET [screen_cursor], 0x002B
 SET A, B
 JSR write_hex
-ADD [cursor], 1
+ADD [screen_cursor], 1
 SET Z, [fg_light_green]
 IFE [rcursor3], 2
 	SET Z, [bg_white]
@@ -170,10 +167,10 @@ HWI [radio2_hwid]
 SET Z, [fg_light_green]
 IFE [rcursor3], 5
 	SET Z, [bg_white]
-SET [cursor], 0x004B
+SET [screen_cursor], 0x004B
 SET A, B
 JSR write_hex
-ADD [cursor], 1
+ADD [screen_cursor], 1
 SET Z, [fg_light_green]
 IFE [rcursor3], 6
 	SET Z, [bg_white]
@@ -183,10 +180,10 @@ JSR write_hex
 SET Z, [bg_light_grey]
 IFE [rcursor3], 3
 	SET Z, [bg_white]
-SET [cursor], 0x0035
+SET [screen_cursor], 0x0035
 SET A, str_send
 JSR write_string
-ADD [cursor], 1
+ADD [screen_cursor], 1
 SET Z, [bg_light_grey]
 IFE [rcursor3], 4
 	SET Z, [bg_white]
@@ -198,10 +195,10 @@ JSR write_string
 SET Z, [bg_light_grey]
 IFE [rcursor3], 7
 	SET Z, [bg_white]
-SET [cursor], 0x0055
+SET [screen_cursor], 0x0055
 SET A, str_send
 JSR write_string
-ADD [cursor], 1
+ADD [screen_cursor], 1
 SET Z, [bg_light_grey]
 IFE [rcursor3], 8
 	SET Z, [bg_white]
@@ -209,7 +206,7 @@ SET A, str_repeat
 	IFE [radio_repeating2], 1
 		SET A, str_stop
 JSR write_string
-SET [cursor], 0x0080
+SET [screen_cursor], 0x0080
 SET Z, [bg_light_grey]
 IFE [rcursor3], 9
 	SET Z, 0x0F00
@@ -343,7 +340,7 @@ SET [video_ram], 0x8400
 SET A, 0
 SET B, [video_ram]
 HWI [screen_hwid]
-SET [cursor], 0x0000
+SET [screen_cursor], 0x0000
 ;SET A, [sending_message]
 ;JSR write_string
 SET A, 3
@@ -375,7 +372,7 @@ SET X, [sending_message]
 ADD X, I
 SET [X], C
 ADD I, 1
-SET [cursor], 0x0000
+SET [screen_cursor], 0x0000
 SET A, [sending_message]
 JSR write_string
 IFE I, 0x00FF
@@ -454,6 +451,70 @@ SET B, POP
 SET I, POP
 SET PC, POP
 
+:radio1_repeat
+SET PUSH, B
+SET B, [clocklo]
+MOD B, 20
+IFE B, 0
+	JSR radio1_send
+SET B, POP
+SET PC, POP
+
+:radio2_repeat
+SET PUSH, B
+SET B, [clocklo]
+MOD B, 20
+IFE B, 0
+	JSR radio2_send
+SET B, POP
+SET PC, POP
+
+
+:write_time
+IFE C, 0x0000
+ SET PC, Lo_word_time
+:exit_time
+SET PC, POP
+
+:lo_word_time
+IFG B, 0x0E0F
+	SET PC, time_hours
+IFG B, 0x0059
+	SET PC, time_minutes
+
+SET PC, time_seconds
+	
+:time_hours
+DIV B, 0x0E10
+SET J, 2
+SET A, B
+SET Z, [fg_light_green]
+JSR write_decimal
+SET Z, [fg_light_grey]
+SET A, str_h_ago
+JSR write_string
+SET PC, exit_time
+
+:time_seconds
+SET J, 2
+SET A, B
+SET Z, [fg_light_green]
+JSR write_decimal
+SET Z, [fg_light_grey]
+SET A, str_s_ago
+JSR write_string
+SET PC, exit_time
+
+:time_minutes
+DIV B, 60
+SET J, 2
+SET A, B
+SET Z, [fg_light_green]
+JSR write_decimal
+SET Z, [fg_light_grey]
+SET A, str_m_ago
+JSR write_string
+SET PC, exit_time
 
 
 ; Strings AND Constants
@@ -471,8 +532,12 @@ DAT "SEND", 0
 :str_stop
 DAT " STOP ", 0
 :str_repeat
-DAT "XXXXXX", 0
+DAT "REPEAT", 0
 :str_sending_message
 DAT "SOS Send Help", 0
 :str_s_ago
 DAT "s ago.", 0
+:str_m_ago
+DAT "m ago.", 0
+:str_h_ago
+DAT "h ago.", 0
