@@ -6,13 +6,13 @@ DAT 0x0002
 DAT 0x0000
 
 
-.include 'src\alpha6\drivers.inc'    ; Hardware support
-.include 'src\alpha6\thrusters.inc'  ; Thrusters and Lasers
-.include 'src\alpha6\stdio.inc'      ; Functions for writing to screen
-.include 'src\alpha6\sensors.inc'    ; support functions and strings for Sensor display
-.include 'src\alpha6\ops.inc'        ; functions for ops screen
-.include 'src\alpha6\radio.inc'      ; functions for radio controls
-.include 'src\alpha6\nav.inc'        ; possible upcoming nav screen
+.include 'MGHelm\src\drivers.inc'    ; Hardware support
+.include 'MGHelm\src\thrusters.inc'  ; Thrusters and Lasers
+.include 'MGHelm\src\stdio.inc'      ; Functions for writing to screen
+.include 'MGHelm\src\sensors.inc'    ; support functions and strings for Sensor display
+.include 'MGHelm\src\ops.inc'        ; functions for ops screen
+.include 'MGHelm\src\radio.inc'      ; functions for radio controls
+.include 'MGHelm\src\nav.inc'        ; possible upcoming nav screen
 
 :helm_mode                           ; Flag to tell the system do display the helm and sensors screen, set to true at first
 DAT 0x0001

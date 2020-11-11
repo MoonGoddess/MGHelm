@@ -8,8 +8,28 @@ DAT 0x7100
 DAT 0x7200
 :radio_message2
 DAT 0x7300
-:sending_message
+:radio_message3
+DAT 0x7400
+:radio_message4
+DAT 0x7500
+:radio_message5
+DAT 0x7600
+:radio_message6
+DAT 0x7700
+:radio_message7
 DAT 0x7800
+:radio_message8
+DAT 0x7900
+:radio_message9
+DAT 0x7A00
+:radio_message10
+DAT 0x7B00
+:radio_message11
+DAT 0x7C00
+:radio_message12
+DAT 0x7D00
+:sending_message
+DAT 0x7F00
 :sending_length
 DAT 0x0015
 :radio_repeating1
@@ -36,6 +56,69 @@ DAT 0x0000
 
 ; Functions
 ; =======================
+:check_radio1
+SET PUSH, A
+SET PUSH, B
+SET PUSH, X
+SET PUSH, Y
+SET PUSH, Z
+SET PUSH, I
+
+SET A, 4
+SET B, [radio_messagetemp1]
+HWI [radio1_hwid]
+IFN I, 0
+	SET [radio_last_signal1], X
+IFN I, 0
+	SET [radio_last_angle1], Y
+SET X, [radio_messagetemp1]
+SET Y, [radio_message1]
+SET Z, I
+IFN I, 0
+	JSR mem_copy
+IFN I, 0
+	SET [radio_last_timelo1], [clocklo]
+IFN I, 0
+	SET [radio_last_timehi1], [clockhi]
+SET I, POP
+SET Z, POP
+SET Y, POP
+SET X, POP
+SET B, POP
+SET A, POP
+SET PC, POP
+
+:check_radio2
+SET PUSH, A
+SET PUSH, B
+SET PUSH, X
+SET PUSH, Y
+SET PUSH, Z
+SET PUSH, I
+
+SET A, 4
+SET B, [radio_messagetemp2]
+HWI [radio2_hwid]
+IFN I, 0
+	SET [radio_last_signal2], X
+IFN I, 0
+	SET [radio_last_angle2], Y
+SET X, [radio_messagetemp2]
+SET Y, [radio_message2]
+SET Z, I
+IFN I, 0
+	JSR mem_copy
+IFN I, 0
+	SET [radio_last_timelo2], [clocklo]
+IFN I, 0
+	SET [radio_last_timehi2], [clockhi]
+SET I, POP
+SET Z, POP
+SET Y, POP
+SET X, POP
+SET B, POP
+SET A, POP
+SET PC, POP
 
 
 
