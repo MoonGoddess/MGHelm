@@ -591,7 +591,7 @@ IFE [key_up_down], 1
 IFE [key_up_down], 1
 	IFE [radio_mode], 2
 		IFE [rcursor2], 0
-			SET [rcursor2], 1
+			SET [rcursor2], 7
 IFE [key_down_down], 1
 	IFE [radio_mode], 1
 		IFE [rcursor1], 0
@@ -599,8 +599,8 @@ IFE [key_down_down], 1
 
 IFE [key_down_down], 1
 	IFE [radio_mode], 2
-		IFE [rcursor2], 0
-			SET [rcursor2], 1
+		IFE [rcursor2], 6
+			SET [rcursor2], -1
 IFE [key_up_down], 1
 	IFE [radio_mode], 1
 		IFG [rcursor1], 0
@@ -608,16 +608,15 @@ IFE [key_up_down], 1
 IFE [key_up_down], 1
 	IFE [radio_mode], 2
 		IFG [rcursor2], 0
-			SET [rcursor2], 0
+			SUB [rcursor2], 1
 
 ;IFE [key_down_down], 1
 ;	IFE [radio_mode], 1
 ;		IFG [rcursor1], 0
-;			SET [rcursor1], 0
-;IFE [key_down_down], 1
-;	IFE [radio_mode], 2
-;		IFG [rcursor2], 0
-;			SET [rcursor2], 0
+			SET [rcursor1], 0
+IFE [key_down_down], 1
+	IFE [radio_mode], 2
+		ADD [rcursor2], 1
 
 IFE [key_left_down], 1
 	IFN [radio_mode], 0

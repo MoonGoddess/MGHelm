@@ -122,16 +122,34 @@ IFE [rcursor2], 0
 SET A, str_radio2
 JSR write_string
 SET Z, [fg_light_green]
-IFE [rcursor2], 1
-	SET Z, [bg_white]
 SET [screen_cursor], 0x002B
-SET A, [0x6000]
+IFE [rcursor2], 1
+	SET A, [0x6000]
+IFE [rcursor2], 2
+	SET A, [0x6200]
+IFE [rcursor2], 3
+	SET A, [0x6400]
+IFE [rcursor2], 4
+	SET A, [0x6600]
+IFE [rcursor2], 5
+	SET A, [0x6800]
+IFE [rcursor2], 6
+	SET A, [0x6A00]
 JSR write_hex
 ADD [screen_cursor], 1
 SET Z, [fg_light_green]
+IFE [rcursor2], 1
+	SET A, [0x6001]
 IFE [rcursor2], 2
-	SET Z, [bg_white]
-SET A, [0x6001]
+	SET A, [0x6201]
+IFE [rcursor2], 3
+	SET A, [0x6401]
+IFE [rcursor2], 4
+	SET A, [0x6601]
+IFE [rcursor2], 5
+	SET A, [0x6801]
+IFE [rcursor2], 6
+	SET A, [0x6A01]
 JSR write_hex
 
 SET [screen_cursor], 0x0049
@@ -140,26 +158,70 @@ SET Z, [fg_light_green]
 JSR write_hex
 SET [screen_cursor], 0x0058
 SET J, 3
-SET A, [0x6003]
+IFE [rcursor2], 1
+	SET A, [0x6003]
+IFE [rcursor2], 2
+	SET A, [0x6203]
+IFE [rcursor2], 3
+	SET A, [0x6403]
+IFE [rcursor2], 4
+	SET A, [0x6603]
+IFE [rcursor2], 5
+	SET A, [0x6803]
+IFE [rcursor2], 6
+	SET A, [0x6A03]
 JSR write_angle
 
 SET B, [clocklo]
 SET C, [clockhi]
-SUB B, [0x6004]
+IFE [rcursor2], 1
+	SUB B, [0x6004]
+IFE [rcursor2], 2
+	SUB B, [0x6204]
+IFE [rcursor2], 3
+	SUB B, [0x6404]
+IFE [rcursor2], 4
+	SUB B, [0x6604]
+IFE [rcursor2], 5
+	SUB B, [0x6804]
+IFE [rcursor2], 6
+	SUB B, [0x6A04]
+IFE [rcursor2], 1
+	SUB C, [0x6005]
+IFE [rcursor2], 2
+	SUB C, [0x6205]
+IFE [rcursor2], 3
+	SUB C, [0x6405]
+IFE [rcursor2], 4
+	SUB C, [0x6605]
+IFE [rcursor2], 5
+	SUB C, [0x6805]
+IFE [rcursor2], 6
+	SUB C, [0x6A05]
 SUB C, [0x6005]
 SET [screen_cursor], 0x0070
 
 IFN [radio_last_timelo2], 0
 	JSR write_time
 IFG [radio_last_timehi2], 0
-	IFE [radio_last_timelo2], 0
 		JSR write_time
 
 SET [screen_cursor], 0x0080
 
 SET [screen_cursor], 0x0080
 SET Z, [fg_white]
-SET A, 0x6007
+IFE [rcursor2], 1
+	SET A, 0x6007
+IFE [rcursor2], 2
+	SET A, 0x6207
+IFE [rcursor2], 3
+	SET A, 0x6407
+IFE [rcursor2], 4
+	SET A, 0x6607
+IFE [rcursor2], 5
+	SET A, 0x6807
+IFE [rcursor2], 6
+	SET A, 0x6A07
 JSR write_string
 
 SET PC, POP
@@ -282,7 +344,25 @@ SET A, 4
 SET B, [radio_messagetemp2]
 HWI [radio2_hwid]
 IFN I, 0
-	JSR store_message1
+	IFE [radio_index], 0
+		JSR store_message1
+IFN I, 0
+	IFE [radio_index], 1
+		JSR store_message2
+IFN I, 0
+	IFE [radio_index], 2
+		JSR store_message3
+IFN I, 0
+	IFE [radio_index], 3
+		JSR store_message4
+IFN I, 0
+	IFE [radio_index], 4
+		JSR store_message5
+IFN I, 0
+	IFE [radio_index], 5
+		JSR store_message6
+		
+
 SET I, POP
 SET Z, POP
 SET Y, POP
@@ -305,6 +385,92 @@ SET A, 2
 HWI [radio2_hwid]
 SET [0x6000], B
 SET [0x6001], C
+SET [radio_index], 1
+SET PC, POP
+
+:store_message2
+SET [0x6206], I
+SET [0x6202], X
+SET [0x6203], Y
+SET X, [radio_messagetemp2]
+SET Y, 0x6207
+SET Z, I
+JSR mem_copy
+SET [0x6204], [clocklo]
+SET [0x6205], [clockhi]
+SET A, 2
+HWI [radio2_hwid]
+SET [0x6200], B
+SET [0x6201], C
+SET [radio_index], 2
+SET PC, POP
+
+:store_message3
+SET [0x6406], I
+SET [0x6402], X
+SET [0x6403], Y
+SET X, [radio_messagetemp2]
+SET Y, 0x6407
+SET Z, I
+JSR mem_copy
+SET [0x6404], [clocklo]
+SET [0x6405], [clockhi]
+SET A, 2
+HWI [radio2_hwid]
+SET [0x6400], B
+SET [0x6401], C
+SET [radio_index], 3
+SET PC, POP
+
+:store_message4
+SET [0x6606], I
+SET [0x6602], X
+SET [0x6603], Y
+SET X, [radio_messagetemp2]
+SET Y, 0x6607
+SET Z, I
+JSR mem_copy
+SET [0x6604], [clocklo]
+SET [0x6605], [clockhi]
+SET A, 2
+HWI [radio2_hwid]
+SET [0x6600], B
+SET [0x6601], C
+SET [radio_index], 4
+SET PC, POP
+
+:store_message5
+SET [0x6806], I
+SET [0x6802], X
+SET [0x6803], Y
+SET X, [radio_messagetemp2]
+SET Y, 0x6807
+SET Z, I
+JSR mem_copy
+SET [0x6804], [clocklo]
+SET [0x6805], [clockhi]
+SET A, 2
+HWI [radio2_hwid]
+SET [0x6800], B
+SET [0x6801], C
+SET [radio_index], 5
+SET PC, POP
+
+:store_message6
+SET [0x6A06], I
+SET [0x6A02], X
+SET [0x6A03], Y
+SET X, [radio_messagetemp2]
+SET Y, 0x6A07
+SET Z, I
+JSR mem_copy
+SET [0x6A04], [clocklo]
+SET [0x6A05], [clockhi]
+SET A, 2
+HWI [radio2_hwid]
+SET [0x6A00], B
+SET [0x6A01], C
+SET [radio_index], 0
 SET PC, POP
 
 :radio_right
