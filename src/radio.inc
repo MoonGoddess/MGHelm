@@ -125,28 +125,28 @@ SET Z, [fg_light_green]
 IFE [rcursor2], 1
 	SET Z, [bg_white]
 SET [screen_cursor], 0x002B
-SET A, [radio_message1 + 0]
+SET A, [0x6000]
 JSR write_hex
 ADD [screen_cursor], 1
 SET Z, [fg_light_green]
 IFE [rcursor2], 2
 	SET Z, [bg_white]
-SET A, [radio_message1 + 1]
+SET A, [0x6001]
 JSR write_hex
 
 SET [screen_cursor], 0x0049
-SET A, [radio_message1 + 2]
+SET A, [0x6002]
 SET Z, [fg_light_green]
 JSR write_hex
 SET [screen_cursor], 0x0058
 SET J, 3
-SET A, [radio_message1 + 3]
+SET A, [0x6003]
 JSR write_angle
 
 SET B, [clocklo]
 SET C, [clockhi]
-SUB B, [radio_message1 + 4]
-SUB C, [radio_message1 + 5]
+SUB B, [0x6004]
+SUB C, [0x6005]
 SET [screen_cursor], 0x0070
 
 IFN [radio_last_timelo2], 0
@@ -159,7 +159,7 @@ SET [screen_cursor], 0x0080
 
 SET [screen_cursor], 0x0080
 SET Z, [fg_white]
-SET A, [radio_message1 + 8]
+SET A, 0x6007
 JSR write_string
 
 SET PC, POP
@@ -292,19 +292,19 @@ SET A, POP
 SET PC, POP
 
 :store_message1
-SET [radio_message1 + 6], I
-SET [radio_message1 + 2], X
-SET [radio_message1 + 3], Y
+SET [0x6006], I
+SET [0x6002], X
+SET [0x6003], Y
 SET X, [radio_messagetemp2]
-SET Y, [radio_message1 + 7]
+SET Y, 0x6007
 SET Z, I
 JSR mem_copy
-SET [radio_message1 + 4], [clocklo]
-SET [radio_message1 + 5], [clockhi]
+SET [0x6004], [clocklo]
+SET [0x6005], [clockhi]
 SET A, 2
 HWI [radio2_hwid]
-SET [radio_message1 + 0], B
-SET [radio_message1 + 1], C
+SET [0x6000], B
+SET [0x6001], C
 SET PC, POP
 
 :radio_right
