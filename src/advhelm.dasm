@@ -597,10 +597,7 @@ IFE [key_down_down], 1
 		IFE [rcursor1], 0
 			SET [rcursor1], 1
 
-IFE [key_down_down], 1
-	IFE [radio_mode], 2
-		IFE [rcursor2], 6
-			SET [rcursor2], -1
+
 IFE [key_up_down], 1
 	IFE [radio_mode], 1
 		IFG [rcursor1], 0
@@ -610,13 +607,19 @@ IFE [key_up_down], 1
 		IFG [rcursor2], 0
 			SUB [rcursor2], 1
 
+
 ;IFE [key_down_down], 1
 ;	IFE [radio_mode], 1
 ;		IFG [rcursor1], 0
-			SET [rcursor1], 0
+;			SET [rcursor1], 0
 IFE [key_down_down], 1
 	IFE [radio_mode], 2
 		ADD [rcursor2], 1
+		
+IFE [key_down_down], 1
+	IFE [radio_mode], 2
+		IFG [rcursor2], 6
+			SET [rcursor2], 0
 
 IFE [key_left_down], 1
 	IFN [radio_mode], 0
@@ -698,10 +701,10 @@ DAT 0x0000
 DAT 0x0000
 
 
-.include 'MGhelm\src\drivers.inc'    ; Hardware support
-.include 'MGhelm\src\thrusters.inc'  ; Thrusters and Lasers
-.include 'MGhelm\src\stdio.inc'      ; Functions for writing to screen
-.include 'MGhelm\src\sensors.inc'    ; support functions and strings for Sensor display
-.include 'MGhelm\src\ops.inc'        ; functions for ops screen
-.include 'MGhelm\src\radio.inc'      ; functions for radio controls
-.include 'MGhelm\src\nav.inc'        ; possible upcoming nav screen
+.include 'MGhelm\src\drivers.dasm'    ; Hardware support
+.include 'MGhelm\src\thrusters.dasm'  ; Thrusters and Lasers
+.include 'MGhelm\src\stdio.dasm'      ; Functions for writing to screen
+.include 'MGhelm\src\sensors.dasm'    ; support functions and strings for Sensor display
+.include 'MGhelm\src\ops.dasm'        ; functions for ops screen
+.include 'MGhelm\src\radio.dasm'      ; functions for radio controls
+.include 'MGhelm\src\nav.dasm'        ; possible upcoming nav screen
