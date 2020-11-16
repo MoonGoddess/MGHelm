@@ -1,0 +1,132 @@
+; Memory
+; ==============================
+:throttle
+DAT 0x00FF
+
+:keys
+DAT 'w'
+DAT 'a'
+DAT 's'
+DAT 'd'
+DAT 'q'
+DAT 'e'
+DAT 'f'
+DAT 't'
+DAT 'g'
+DAT 0x0080 ; Arrow up
+DAT	0x0081 ; Arrow down
+DAT	0x0082 ; Arrow left
+DAT	0x0083 ; Arrow right
+DAT 0x0011 ; Return Key
+
+:keys_changed
+DAT 0x0000
+:keys_down
+:key_w_down
+DAT 0x0000
+:key_a_down
+DAT 0x0000
+:key_s_down
+DAT 0x0000
+:key_d_down
+DAT 0x0000
+:key_q_down
+DAT 0x0000
+:key_e_down
+DAT 0x0000
+:key_f_down
+DAT 0x0000
+:key_t_down
+DAT 0x0000
+:key_g_down
+DAT 0x0000
+:key_up_down
+DAT 0x0000
+:key_down_down
+DAT 0x0000
+:key_left_down
+DAT 0x0000
+:key_right_down
+DAT 0x0000
+:key_enter_down
+DAT 0x0000
+
+; Check thrusters
+; ==============================
+:setup_thrusters
+HWN J
+IFL J, 8
+	SET PC, no_thrusters
+	
+SET I, 0
+:iterate_thruster_hw_loop
+IFE I, 8
+	SET PC, take_off
+HWQ I
+ADD I, 1
+IFE B, 0xa474
+IFE A, 0x8683
+	SET PC, iterate_thruster_hw_loop
+	
+:no_thrusters
+SET A, str_no_thruster_message
+SET Z, 0xF000
+JSR write_string
+SET PC, catch_fire
+
+SET PC, POP
+
+; Support routines
+; ==============================
+
+
+
+:fire_laser
+SET PUSH, I
+SET PUSH, A
+SET A, 0
+HWI [laser_hwid]
+SET I, 0
+SET A, 1
+HWI [laser_hwid]
+SET A, POP
+SET I, POP
+SET PC, POP
+
+:throttle_up
+IFN [throttle], 255
+	ADD [throttle], 5
+
+SET PC, POP
+
+:throttle_down
+IFN [throttle], 0
+	SUB [throttle], 5
+SET PC, POP
+
+:write_throttle
+SET PUSH, X
+SET PUSH, A
+SET PUSH, Z
+SET Z, 0xB000
+SET A, [throttle]
+MUL A, 100
+DIV A, 255
+JSR write_decimal
+SET X, [video_ram]
+ADD X, [screen_cursor]
+SET X, 0x7025
+SET Z, POP
+SET A, POP
+SEt X, POP
+SET PC, POP
+
+
+
+; Strings AND Constants
+; =======================
+
+
+
+
+
