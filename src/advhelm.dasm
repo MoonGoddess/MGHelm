@@ -227,7 +227,7 @@ SET PC, POP
 :str_throttle
 DAT "Thrl    %", 0
 :str_title
-DAT "MG 2.0", 0
+DAT "MG 2.0a8", 0
 :str_radio1
 DAT "Radio1", 0
 :str_radio2
