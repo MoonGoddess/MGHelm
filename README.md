@@ -7,7 +7,7 @@ Helm control program for DCPU-16 inside of the game [CodeSpace](https://www.code
 * Full throttle control
 * Weapons on "f" key
 * Listing of 10 closest sensor contacts, on front and rear
-* Radio reception for 2 radio
+* Radio reception for 2 radios
 * Transmit feature, with ability to repeat on both radios
 * Control of doors and Clamps
 
