@@ -122,33 +122,37 @@ IFE [rcursor2], 0
 SET A, str_radio2
 JSR write_string
 SET Z, [fg_light_green]
+IFE [rcursor2], 1
+	SET Z, 0x0800
 SET [screen_cursor], 0x002B
-IFL [rcursor2], 2
+IFE [r2page], 1
 	SET A, [0x6000]
-IFE [rcursor2], 2
+IFE [r2page], 2
 	SET A, [0x6200]
-IFE [rcursor2], 3
+IFE [r2page], 3
 	SET A, [0x6400]
-IFE [rcursor2], 4
+IFE [r2page], 4
 	SET A, [0x6600]
-IFE [rcursor2], 5
+IFE [r2page], 5
 	SET A, [0x6800]
-IFE [rcursor2], 6
+IFE [r2page], 6
 	SET A, [0x6A00]
 JSR write_hex
 ADD [screen_cursor], 1
 SET Z, [fg_light_green]
-IFL [rcursor2], 2
-	SET A, [0x6001]
 IFE [rcursor2], 2
+	SET Z, 0x0800
+IFE [r2page], 1
+	SET A, [0x6001]
+IFE [r2page], 2
 	SET A, [0x6201]
-IFE [rcursor2], 3
+IFE [r2page], 3
 	SET A, [0x6401]
-IFE [rcursor2], 4
+IFE [r2page], 4
 	SET A, [0x6601]
-IFE [rcursor2], 5
+IFE [r2page], 5
 	SET A, [0x6801]
-IFE [rcursor2], 6
+IFE [r2page], 6
 	SET A, [0x6A01]
 JSR write_hex
 
@@ -158,45 +162,45 @@ SET Z, [fg_light_green]
 JSR write_hex
 SET [screen_cursor], 0x0058
 SET J, 3
-IFL [rcursor2], 2
+IFE [r2page], 1
 	SET A, [0x6003]
-IFE [rcursor2], 2
+IFE [r2page], 2
 	SET A, [0x6203]
-IFE [rcursor2], 3
+IFE [r2page], 3
 	SET A, [0x6403]
-IFE [rcursor2], 4
+IFE [r2page], 4
 	SET A, [0x6603]
-IFE [rcursor2], 5
+IFE [r2page], 5
 	SET A, [0x6803]
-IFE [rcursor2], 6
+IFE [r2page], 6
 	SET A, [0x6A03]
 JSR write_angle
 
 SET B, [clocklo]
 SET C, [clockhi]
-IFL [rcursor2], 2
+IFE [r2page], 1
 	SUB B, [0x6004]
-IFE [rcursor2], 2
+IFE [r2page], 2
 	SUB B, [0x6204]
-IFE [rcursor2], 3
+IFE [r2page], 3
 	SUB B, [0x6404]
-IFE [rcursor2], 4
+IFE [r2page], 4
 	SUB B, [0x6604]
-IFE [rcursor2], 5
+IFE [r2page], 5
 	SUB B, [0x6804]
-IFE [rcursor2], 6
+IFE [r2page], 6
 	SUB B, [0x6A04]
-IFE [rcursor2], 1
+IFE [r2page], 1
 	SUB C, [0x6005]
-IFE [rcursor2], 2
+IFE [r2page], 2
 	SUB C, [0x6205]
-IFE [rcursor2], 3
+IFE [r2page], 3
 	SUB C, [0x6405]
-IFE [rcursor2], 4
+IFE [r2page], 4
 	SUB C, [0x6605]
-IFE [rcursor2], 5
+IFE [r2page], 5
 	SUB C, [0x6805]
-IFE [rcursor2], 6
+IFE [r2page], 6
 	SUB C, [0x6A05]
 SUB C, [0x6005]
 SET [screen_cursor], 0x0070
@@ -210,23 +214,25 @@ SET [screen_cursor], 0x0080
 
 SET [screen_cursor], 0x0080
 SET Z, [fg_white]
-IFL [rcursor2], 2
+IFE [r2page], 1
 	SET A, 0x6007
-IFE [rcursor2], 2
+IFE [r2page], 2
 	SET A, 0x6207
-IFE [rcursor2], 3
+IFE [r2page], 3
 	SET A, 0x6407
-IFE [rcursor2], 4
+IFE [r2page], 4
 	SET A, 0x6607
-IFE [rcursor2], 5
+IFE [r2page], 5
 	SET A, 0x6807
-IFE [rcursor2], 6
+IFE [r2page], 6
 	SET A, 0x6A07
 JSR write_string
 
-SET [screen_cursor], 0x001C
+SET [screen_cursor], 0x003C
 SET Z, [fg_light_blue]
-SET A, [rcursor2]
+IFE [rcursor2], 3
+	SET Z, 0x0800
+SET A, [r2page]
 ;ADD A, 1
 JSR write_hex
 
@@ -494,6 +500,9 @@ IFE [radio_mode], 1
 	IFE [rcursor1], 1
 		SET [rcursor1], 2
 IFE [radio_mode], 2
+	IFE [rcursor2], 2
+		SET [rcursor2], 3
+IFE [radio_mode], 2
 	IFE [rcursor2], 1
 		SET [rcursor2], 2
 IFE [radio_mode], 3
@@ -524,6 +533,9 @@ IFE [radio_mode], 1
 IFE [radio_mode], 2
 	IFE [rcursor2], 2
 		SET [rcursor2], 1
+IFE [radio_mode], 2
+	IFE [rcursor2], 3
+		SET [rcursor2], 2
 IFE [radio_mode], 3
 	IFG [rcursor3], 1
 		IFL [rcursor3], 5

@@ -19,6 +19,8 @@ DAT 0x0000
 DAT 0x0000
 :rcursor2                            ; which line of radio2 is active, currently unused
 DAT 0x0000
+:r2page
+DAT 0x0001
 :rcursor3                            ; which line of transmit mode is active.
 DAT 0x0000
 
@@ -496,6 +498,11 @@ IFE [radio_mode], 1
 IFE [radio_mode], 2
 	IFE [rcursor2], 2
 		JSR change2C
+IFE [radio_mode], 2
+	IFE [rcursor2], 3
+		ADD [r2page], 1
+IFE [r2page], 7
+	SET [r2page], 1
 IFE [radio_mode], 3
 	IFE [rcursor3], 1
 		JSR change1B
@@ -593,7 +600,7 @@ IFE [key_up_down], 1
 IFE [key_up_down], 1
 	IFE [radio_mode], 2
 		IFE [rcursor2], 0
-			SET [rcursor2], 7
+			SET [rcursor2], 1
 IFE [key_down_down], 1
 	IFE [radio_mode], 1
 		IFE [rcursor1], 0
@@ -606,22 +613,39 @@ IFE [key_up_down], 1
 			SET [rcursor1], 0
 IFE [key_up_down], 1
 	IFE [radio_mode], 2
-		IFG [rcursor2], 0
-			SUB [rcursor2], 1
+
+IFE [key_up_down], 1
+	IFE [radio_mode], 2
+		IFE [rcursor2], 2
+			SET [rcursor2], 0
+IFE [key_up_down], 1
+	IFE [radio_mode], 2
+		IFE [rcursor2], 3
+			SUB [r2page], 1
 
 
-;IFE [key_down_down], 1
-;	IFE [radio_mode], 1
-;		IFG [rcursor1], 0
-;			SET [rcursor1], 0
+IFE [key_down_down], 1
+	IFE [radio_mode], 1
+		IFG [rcursor1], 0
+			SET [rcursor1], 0
 IFE [key_down_down], 1
 	IFE [radio_mode], 2
-		ADD [rcursor2], 1
+		IFE [rcursor2], 1
+			SET [rcursor2], 0
 		
 IFE [key_down_down], 1
 	IFE [radio_mode], 2
-		IFG [rcursor2], 6
+		IFE [rcursor2], 2
 			SET [rcursor2], 0
+FE [key_down_down], 1
+	IFE [radio_mode], 2
+		IFE [rcursor2], 3
+			ADD [r2page], 1
+
+IFE [r2page], 0
+	SET [r2page], 6
+IFE [r2page], 7
+	SET [r2page], 1
 
 IFE [key_left_down], 1
 	IFN [radio_mode], 0
