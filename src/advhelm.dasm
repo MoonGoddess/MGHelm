@@ -17,6 +17,8 @@ DAT 0x0000
 DAT 0x0000
 :rcursor1                            ; which line of radio1 is active, currently unused
 DAT 0x0000
+:r1page
+DAT 0x0001
 :rcursor2                            ; which line of radio2 is active, currently unused
 DAT 0x0000
 :r2page
@@ -501,6 +503,9 @@ IFE [radio_mode], 2
 IFE [radio_mode], 2
 	IFE [rcursor2], 3
 		ADD [r2page], 1
+IFE [radio_mode], 1
+	IFE [rcursor1], 3
+		ADD [r1page], 1
 IFE [r2page], 7
 	SET [r2page], 1
 IFE [radio_mode], 3
@@ -609,10 +614,20 @@ IFE [key_down_down], 1
 
 IFE [key_up_down], 1
 	IFE [radio_mode], 1
-		IFG [rcursor1], 0
+		IFE [rcursor1], 2
 			SET [rcursor1], 0
 IFE [key_up_down], 1
-	IFE [radio_mode], 2
+	IFE [radio_mode], 1
+		IFE [rcursor1], 3
+			SUB [r1page], 1
+IFE [key_down_down], 1
+	IFE [radio_mode], 1
+		IFE [rcursor1], 0
+			SET [rcursor1], 1
+IFE [key_down_down], 1
+	IFE [radio_mode], 1
+		IFE [rcursor1], 3
+			ADD [r1page], 1
 
 IFE [key_up_down], 1
 	IFE [radio_mode], 2
@@ -623,25 +638,20 @@ IFE [key_up_down], 1
 		IFE [rcursor2], 3
 			SUB [r2page], 1
 
+IFE [key_down_down], 1
+	IFE [radio_mode], 2
+		IFE [rcursor2], 0
+			SET [rcursor2], 1
+		
 
 IFE [key_down_down], 1
-	IFE [radio_mode], 1
-		IFG [rcursor1], 0
-			SET [rcursor1], 0
-IFE [key_down_down], 1
-	IFE [radio_mode], 2
-		IFE [rcursor2], 1
-			SET [rcursor2], 0
-		
-IFE [key_down_down], 1
-	IFE [radio_mode], 2
-		IFE [rcursor2], 2
-			SET [rcursor2], 0
-FE [key_down_down], 1
 	IFE [radio_mode], 2
 		IFE [rcursor2], 3
 			ADD [r2page], 1
-
+IFE [r1page], 0
+	SET [r1page], 6
+IFE [r1page], 7
+	SET [r1page], 1
 IFE [r2page], 0
 	SET [r2page], 6
 IFE [r2page], 7
@@ -714,8 +724,10 @@ IFE [key_down_down], 1
 	IFE [radio_mode], 3
 		IFE [rcursor3], 0
 			SET [rcursor3], 1
-
-
+SET [key_up_down], 0
+SET [key_down_down], 0
+SET [key_left_down], 0
+SET [key_right_down], 0
 
 SET PC, POP
 
