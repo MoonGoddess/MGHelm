@@ -397,7 +397,19 @@ IFN I, 0
 IFN I, 0
 	IFE [radio_index1], 5
 		JSR store_message1_5
-
+;IFN I, 0
+;	SET [radio_last_signal1], X
+;IFN I, 0
+;	SET [radio_last_angle1], Y
+;SET X, [radio_messagetemp1]
+;SET Y, [radio1_message]
+;SET Z, I
+;IFN I, 0
+;	JSR mem_copy
+;IFN I, 0
+;	SET [radio_last_timelo1], [clocklo]
+;IFN I, 0
+;	SET [radio_last_timehi1], [clockhi]
 SET I, POP
 SET Z, POP
 SET Y, POP
