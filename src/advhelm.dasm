@@ -47,8 +47,6 @@ SET A, 1
 SET B, 0x0000
 SET C, 0x0000
 HWI [radio2_hwid]
-SET [0x6000], B
-SET [0x6001], C
 SET X, str_sending_message
 SET Y, [sending_message]
 SET Z, 14
