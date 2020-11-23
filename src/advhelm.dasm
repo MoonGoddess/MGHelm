@@ -233,7 +233,7 @@ SET PC, POP
 :str_throttle
 DAT "Thrl    %", 0
 :str_title
-DAT "MG 2.0a9", 0
+DAT "MG 2.0a8", 0
 :str_radio1
 DAT "Radio1", 0
 :str_radio2
@@ -245,7 +245,7 @@ DAT "Ops", 0
 :str_sensors
 DAT "Sensors", 0
 :str_intro1
-DAT "        MG Helm 2.0 alpha9      ", 0
+DAT "        MG Helm 2.0 alpha8      ", 0
 :str_intro2
 DAT "   USE WASD+QE for movement.    ", 0
 :str_intro4
