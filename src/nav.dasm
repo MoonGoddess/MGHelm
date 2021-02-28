@@ -52,3 +52,48 @@ DAT "Nav Out D2  ", 0
 DAT "Nav Out D3  ", 0
 :str_Nav16
 DAT "Nav Out D4  ", 0
+:str_station
+DAT "Station     ", 0
+:str_ship
+DAT "Player Ship ", 0
+:str_mystery
+DAT "Relic Ship  ", 0
+:str_manmade
+DAT "Manmade Obj ", 0
+:str_docking
+DAT "Dock Buoy   ", 0
+:str_type108
+DAT "Haz Buoy    ", 0
+:str_buoyunknown
+DAT "Buoy(Unknwn)", 0
+:str_astgreen
+DAT "Ast (Green) ", 0
+:str_astred
+DAT "Ast (Red)   ", 0
+:str_astblack
+DAT "Ast (Black) ", 0
+:str_astblue
+DAT "Ast (Blue)  ", 0
+:str_astgold
+DAT "Ast (Gold)  ", 0
+:str_astrock
+DAT "Ast (Rock)  ", 0
+:str_astbits
+DAT "Ast bits    ", 0
+:str_astunknown
+DAT "Ast(Unknown)", 0
+:str_typeA
+DAT "Ship Debris ", 0
+:str_unknown
+DAT "Unknown     ", 0
+:str_type208
+DAT "Nav Buoy    ", 0
+:str_outerwall
+DAT "Outer Wall  ", 0
+:str_warpgate
+DAT "Warp Gate   ", 0
+
+:type_3_contacts
+DAT 0x2C02, 0x73EF, "Moon's Ship ", 0
+DAT 0x91E2, 0x04C1, "Tom's Ship  ", 0
+DAT 0x6FC3, 0xFEED, "Relic Ship  ", 0

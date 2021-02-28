@@ -175,12 +175,12 @@ IFE [contact_type], 0x0003
 		IFE C, 0xFEED
 			SET A, str_mystery
 IFE [contact_type], 0x0003
-	IFE PEEK, 0x2C02
-		IFE C, 0x73EF
+	IFE PEEK, 0xBC1C
+		IFE C, 0x31F9
 			SET A, str_moon
 IFE [contact_type], 0x0003
-	IFE PEEK, 0x91E2
-		IFE C, 0x04C1
+	IFE PEEK, 0x53E3
+		IFE C, 0x3034
 			SET A, str_tomtom
 		
 SET PC, exit_type
@@ -306,43 +306,6 @@ SET PC, POP
 :str_heading
 DAT "  Type:        ID:    Range: Ang", 0
                                      
-:str_station
-DAT "Station     ", 0
-:str_ship
-DAT "Player Ship ", 0
-:str_mystery
-DAT "Relic Ship  ", 0
-:str_manmade
-DAT "Manmade Obj ", 0
-:str_docking
-DAT "Dock Buoy   ", 0
-:str_type108
-DAT "Haz Buoy    ", 0
-:str_buoyunknown
-DAT "Buoy(Unknwn)", 0
-:str_astgreen
-DAT "Ast (Green) ", 0
-:str_astred
-DAT "Ast (Red)   ", 0
-:str_astblack
-DAT "Ast (Black) ", 0
-:str_astblue
-DAT "Ast (Blue)  ", 0
-:str_astgold
-DAT "Ast (Gold)  ", 0
-:str_astrock
-DAT "Ast (Rock)  ", 0
-:str_astbits
-DAT "Ast bits    ", 0
-:str_astunknown
-DAT "Ast(Unknown)", 0
-:str_typeA
-DAT "Ship Debris ", 0
-:str_unknown
-DAT "Unknown     ", 0
-:str_type208
-DAT "Nav Buoy    ", 0
-:str_outerwall
-DAT "Outer Wall  ", 0
+
 
 
