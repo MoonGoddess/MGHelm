@@ -331,6 +331,8 @@ IFN I, 0
 	SET [radio_last_timelo1], [clocklo]
 IFN I, 0
 	SET [radio_last_timehi1], [clockhi]
+SET A, 5
+HWI [radio1_hwid]
 SET I, POP
 SET Z, POP
 SET Y, POP
@@ -368,7 +370,8 @@ IFN I, 0
 IFN I, 0
 	IFE [radio_index], 5
 		JSR store_message6
-		
+SET A, 5
+HWI [radio2_hwid]	
 
 SET I, POP
 SET Z, POP

@@ -67,7 +67,7 @@ DAT "Haz Buoy    ", 0
 :str_buoyunknown
 DAT "Buoy(Unknwn)", 0
 :str_astgreen
-DAT "Ast (Green) ", 0
+DAT "Ast(Emerald)", 0
 :str_astred
 DAT "Ast (Red)   ", 0
 :str_astblack
@@ -75,9 +75,9 @@ DAT "Ast (Black) ", 0
 :str_astblue
 DAT "Ast (Blue)  ", 0
 :str_astgold
-DAT "Ast (Gold)  ", 0
+DAT "Ast (Topaz) ", 0
 :str_astrock
-DAT "Ast (Rock)  ", 0
+DAT "Ast(Hyd/Oxy)", 0
 :str_astbits
 DAT "Ast bits    ", 0
 :str_astunknown

@@ -481,6 +481,9 @@ JSR write_string
 SET [screen_cursor], 0x00E0
 SET A, str_rightdoor
 JSR write_string
+SET [screen_cursor], 0x0100
+SET A, str_reardoor
+JSR write_string
 
 SET [screen_cursor], 0x0140
 SET A, str_fuel
@@ -588,7 +591,7 @@ IFE [key_right_down], 1
 	IFE [ops_mode], 1
 		JSR ops_right
 
-IFE [ocursor], 6
+IFE [ocursor], 7
 	SET [ocursor], 0
 SET PC, POP
 

@@ -48,8 +48,10 @@ IFE [ocursor], 2
 	SET Z, 0xA700 ; fg_light_green bg_light_grey
 JSR write_string
 
-SET A, 0
+SET J, 0x00B0
 SET I, 0
+:doors_loop
+SET A, 0
 HWI [doors_hwid]
 SHR B, 8
 IFE B, 0
@@ -60,47 +62,53 @@ IFE B, 2
 	SET A, str_auto
 IFE B, 3
 	SET A, str_open
-SET [screen_cursor], 0x00B0
+SET [screen_cursor], J
 SET Z, [fg_light_green]
-IFE [ocursor], 3
+SET Y, I
+ADD Y, 3
+IFE [ocursor], Y
 	SET Z, 0xA700  ; fg_light_green bg_light_grey
 JSR write_string
+ADD I, 1
+ADD J, 0x0020
+IFN I, 4
+	SET PC, doors_loop
 
-SET A, 0
-SET I, 1
-HWI [doors_hwid]
-SHR B, 8
-IFE B, 0
-	SET A, str_locked
-IFE B, 1
-	SET A, str_oneway
-IFE B, 2
-	SET A, str_auto
-IFE B, 3
-	SET A, str_open
-SET [screen_cursor], 0x00D0
-SET Z, [fg_light_green]
-IFE [ocursor], 4
-	SET Z, 0xA700 ; fg_light_green bg_light_grey
-JSR write_string
+; SET A, 0
+; SET I, 1
+; HWI [doors_hwid]
+; SHR B, 8
+; IFE B, 0
+; 	SET A, str_locked
+; IFE B, 1
+; 	SET A, str_oneway
+; IFE B, 2
+; 	SET A, str_auto
+; IFE B, 3
+; 	SET A, str_open
+; SET [screen_cursor], 0x00D0
+; SET Z, [fg_light_green]
+; IFE [ocursor], 4
+; 	SET Z, 0xA700 ; fg_light_green bg_light_grey
+; JSR write_string
 
-SET A, 0
-SET I, 2
-HWI [doors_hwid]
-SHR B, 8
-IFE B, 0
-	SET A, str_locked
-IFE B, 1
-	SET A, str_oneway
-IFE B, 2
-	SET A, str_auto
-IFE B, 3
-	SET A, str_open
-SET [screen_cursor], 0x00F0
-SET Z, [fg_light_green]
-IFE [ocursor], 5
-	SET Z, 0xA700   ; fg_light_green bg_light_grey
-JSR write_string
+; SET A, 0
+; SET I, 2
+; HWI [doors_hwid]
+; SHR B, 8
+; IFE B, 0
+; 	SET A, str_locked
+; IFE B, 1
+; 	SET A, str_oneway
+; IFE B, 2
+; 	SET A, str_auto
+; IFE B, 3
+; 	SET A, str_open
+; SET [screen_cursor], 0x00F0
+; SET Z, [fg_light_green]
+; IFE [ocursor], 5
+; 	SET Z, 0xA700   ; fg_light_green bg_light_grey
+; JSR write_string
 
 
 
@@ -231,6 +239,8 @@ DAT "Cockpit Door: ", 0
 DAT "Left Door:    ", 0
 :str_rightdoor
 DAT "Right Door:   ", 0
+:str_reardoor
+DAT "Rear Door:    ", 0
 :str_locked
 DAT "Locked ", 0
 :str_pulling

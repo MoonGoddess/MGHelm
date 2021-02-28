@@ -119,6 +119,8 @@ IFE B, 0x0003
 	SET PC, type_3
 IFE B, 0x0008
 	SET PC, type_8
+IFE B, 0x0010
+	SET A, str_warpgate
 IFE B, 0x000A
 	SET A, str_typeA
 :exit_type
