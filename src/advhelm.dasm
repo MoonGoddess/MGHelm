@@ -155,6 +155,15 @@ IFE [key_e_down], 1
 SET B, [throttle]
 HWI 7
 
+; harpoon0
+IFE [key_1_down], 1
+	JSR fireHarpoon0
+SET [key_1_down], 0
+; harpoon1
+IFE [key_2_down], 1
+	JSR fireHarpoon1
+SET [key_2_down], 0
+
 IFE [key_t_down], 1
 	JSR throttle_up
 IFE [key_g_down], 1
@@ -193,6 +202,7 @@ DAT 0x0000
 ; Interrupt handler
 ; ==============================
 :irq_handler
+IAQ 1
 IFE A, [keyboard_hwid]
 	JSR keyboard_irq_handler
 IFE A, [radio1_hwid]
@@ -505,6 +515,7 @@ IFE [radio_mode], 3
 		JSR change1C
 IFE [radio_mode], 3
 	IFE [rcursor3], 6
+
 		JSR change2C
 IFE [radio_mode], 3
 	IFE [rcursor3], 3

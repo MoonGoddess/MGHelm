@@ -18,6 +18,8 @@ DAT	0x0081 ; Arrow down
 DAT	0x0082 ; Arrow left
 DAT	0x0083 ; Arrow right
 DAT 0x0011 ; Return Key
+DAT '1'
+DAT '2'
 
 :keys_changed
 DAT 0x0000
@@ -49,6 +51,10 @@ DAT 0x0000
 :key_right_down
 DAT 0x0000
 :key_enter_down
+DAT 0x0000
+:key_1_down
+DAT 0x0000
+:key_2_down
 DAT 0x0000
 
 ; Check thrusters
@@ -119,6 +125,32 @@ SET X, 0x7025
 SET Z, POP
 SET A, POP
 SEt X, POP
+SET PC, POP
+
+:fireHarpoon0
+SET PUSH, A
+SET PUSH, B
+SET PUSH, I
+SET A, 1
+SET I, 0
+SET B, 0xf800
+HWI [harpoon_hwid]
+SET I, POP
+SET B, POP
+SET A, POP
+SET PC, POP
+
+:fireHarpoon1
+SET PUSH, A
+SET PUSH, B
+SET PUSH, I
+SET A, 1
+SET I, 1
+SET B, 0x0800
+HWI [harpoon_hwid]
+SET I, POP
+SET B, POP
+SET A, POP
 SET PC, POP
 
 

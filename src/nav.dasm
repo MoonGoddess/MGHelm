@@ -12,11 +12,14 @@ SET PC, POP
 ; Strings AND Constants
 ; =======================
 
-; Moon_Goddess  F448213E
-; THplusplus    1FB069D9
-; asbestospants 7BDAFC9D
+; Moon_Goddess  2C0273EF
+; THplusplus    91E204C1
+; asbestospants 
 
-
+:str_tomtom
+DAT "Tom's Ship  ", 0
+:str_moon
+DAT "Moon's Ship ", 0
 :str_Nav1
 DAT "Nav Out A1  ", 0
 :str_Nav2
