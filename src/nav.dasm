@@ -81,9 +81,9 @@ DAT "Outer Wall  ", 0
 :str_warpgate
 DAT "Warp Gate   ", 0
 :str_type001
-DAT "Ast (Blue)  ", 0
+DAT "As(Sapphire)", 0
 :str_type101
-DAT "Ast (Red)   ", 0
+DAT "Ast (Ruby)  ", 0
 :str_type201
 DAT "Ast (Topaz) ", 0
 :str_type301
@@ -91,15 +91,15 @@ DAT "As(Obsidian)", 0
 :str_type401
 DAT "Ast(Emerald)", 0
 :str_type501
-DAT "Ast (type 5)", 0
+DAT "Ast (Hydrox)", 0
 :str_type601
-DAT "Ast (type 6)", 0
+DAT "Ast (Hydrox)", 0
 :str_type701
-DAT "Ast (type 7)", 0
+DAT "Ast (Hydrox)", 0
 :str_type801
-DAT "Ast (type 8)", 0
+DAT "Ast (Hydrox)", 0
 :str_type901
-DAT "Ast (type 9)", 0
+DAT "Ast (Hydrox)", 0
 
 
 
