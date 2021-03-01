@@ -17,6 +17,8 @@ DAT 0x000F
 DAT 0x0010
 :laser_hwid
 DAT 0x0000
+:harpoon_hwid
+DAT 0x0000
 :video_ram
 DAT 0x8000
 :clamps_hwid
@@ -63,6 +65,9 @@ IFE A, 0x90c7
 IFE B, 0xEA63
 IFE A, 0x5459
 	SET [laser_hwid], I
+IFE B, 0x0320
+IFE A, 0x0f75
+	SET [harpoon_hwid], I
 ADD I, 1
 IFL I, J
 	SET PC, iterate_hw
@@ -92,6 +97,10 @@ SET B, [keyboard_hwid]
 HWI [keyboard_hwid]
 SET A, 0
 HWI [keyboard_hwid]
+
+SET A, 2
+SET B, 0
+HWI [harpoon_hwid]
 
 SET B, [radio1_hwid]
 SET A, 0

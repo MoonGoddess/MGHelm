@@ -122,7 +122,11 @@ IFE [rcursor2], 0
 SET A, str_radio2
 JSR write_string
 SET Z, [fg_light_green]
+IFE [rcursor2], 0
+	SET Z, [fg_dark_grey]
 SET [screen_cursor], 0x002B
+IFE [rcursor2], 0
+	SET A, 0xFFFF
 IFE [rcursor2], 1
 	SET A, [0x6000]
 IFE [rcursor2], 2
@@ -138,6 +142,10 @@ IFE [rcursor2], 6
 JSR write_hex
 ADD [screen_cursor], 1
 SET Z, [fg_light_green]
+IFE [rcursor2], 0
+	SET Z, [fg_dark_grey]
+IFE [rcursor2], 0
+	SET A, 0xFFFF
 IFE [rcursor2], 1
 	SET A, [0x6001]
 IFE [rcursor2], 2
@@ -155,9 +163,13 @@ JSR write_hex
 SET [screen_cursor], 0x0049
 SET A, [0x6002]
 SET Z, [fg_light_green]
+IFE [rcursor2], 0
+	SET Z, [fg_dark_grey]
 JSR write_hex
 SET [screen_cursor], 0x0058
 SET J, 3
+IFE [rcursor2], 0
+	SET A, 0xFFFF
 IFE [rcursor2], 1
 	SET A, [0x6003]
 IFE [rcursor2], 2
@@ -174,6 +186,10 @@ JSR write_angle
 
 SET B, [clocklo]
 SET C, [clockhi]
+IFE [rcursor2], 0
+	SET B, 0
+IFE [rcursor2], 0
+	SET C, 0
 IFE [rcursor2], 1
 	SUB B, [0x6004]
 IFE [rcursor2], 2
@@ -201,15 +217,18 @@ IFE [rcursor2], 6
 SUB C, [0x6005]
 SET [screen_cursor], 0x0070
 
-IFN [radio_last_timelo2], 0
+IFN B, 0
 	JSR write_time
-IFG [radio_last_timehi2], 0
-		JSR write_time
 
 SET [screen_cursor], 0x0080
+JSR write_blank_line
 
 SET [screen_cursor], 0x0080
 SET Z, [fg_white]
+IFE [rcursor2], 0
+	SET Z, [fg_dark_grey]
+IFE [rcursor2], 0
+	SET A, [str_blank_line]
 IFE [rcursor2], 1
 	SET A, 0x6007
 IFE [rcursor2], 2
@@ -225,7 +244,9 @@ IFE [rcursor2], 6
 JSR write_string
 
 SET [screen_cursor], 0x001C
-SET Z, [fg_light_blue]
+SET Z, [fg_light_green]
+IFN [rcursor2], 0
+	SET Z, [bg_light_grey]
 SET A, [rcursor2]
 ;ADD A, 1
 JSR write_hex
@@ -331,6 +352,8 @@ IFN I, 0
 	SET [radio_last_timelo1], [clocklo]
 IFN I, 0
 	SET [radio_last_timehi1], [clockhi]
+SET A, 5
+HWI [radio1_hwid]
 SET I, POP
 SET Z, POP
 SET Y, POP
@@ -368,7 +391,9 @@ IFN I, 0
 IFN I, 0
 	IFE [radio_index], 5
 		JSR store_message6
-		
+ADD [radio_index], 1
+IFE [radio_index], 7
+	SET [radio_index], 0
 
 SET I, POP
 SET Z, POP
@@ -392,7 +417,7 @@ SET A, 2
 HWI [radio2_hwid]
 SET [0x6000], B
 SET [0x6001], C
-SET [radio_index], 1
+
 SET PC, POP
 
 :store_message2
@@ -409,7 +434,7 @@ SET A, 2
 HWI [radio2_hwid]
 SET [0x6200], B
 SET [0x6201], C
-SET [radio_index], 2
+
 SET PC, POP
 
 :store_message3
@@ -426,7 +451,7 @@ SET A, 2
 HWI [radio2_hwid]
 SET [0x6400], B
 SET [0x6401], C
-SET [radio_index], 3
+
 SET PC, POP
 
 :store_message4
@@ -443,7 +468,7 @@ SET A, 2
 HWI [radio2_hwid]
 SET [0x6600], B
 SET [0x6601], C
-SET [radio_index], 4
+
 SET PC, POP
 
 :store_message5
@@ -460,7 +485,7 @@ SET A, 2
 HWI [radio2_hwid]
 SET [0x6800], B
 SET [0x6801], C
-SET [radio_index], 5
+
 SET PC, POP
 
 :store_message6
@@ -477,7 +502,7 @@ SET A, 2
 HWI [radio2_hwid]
 SET [0x6A00], B
 SET [0x6A01], C
-SET [radio_index], 0
+
 SET PC, POP
 
 :radio_right
@@ -738,16 +763,35 @@ SET PC, POP
 :write_time
 IFE C, 0x0000
  SET PC, Lo_word_time
+SET PC, hi_word_time
 :exit_time
 SET PC, POP
 
 :lo_word_time
 IFG B, 0x0E0F
 	SET PC, time_hours
-IFG B, 0x0059
+IFG B, 0x003B
 	SET PC, time_minutes
-
 SET PC, time_seconds
+
+:hi_word_time
+IFG C, 0x0002
+	SET PC, time_days
+SHR B, 4
+SHL C, 12
+BOR B, C
+DIV B, 0x00E1
+SET J, 2
+SET A, B
+SET Z, [fg_light_green]
+JSR write_decimal
+SET Z, [fg_light_grey]
+SET A, str_h_ago
+JSR write_string
+SET PC, exit_time
+
+:time_days
+
 	
 :time_hours
 DIV B, 0x0E10

@@ -99,7 +99,7 @@ SET B, [I + keys]
 HWI [keyboard_hwid]
 SET [I + keys_down], C
 ADD I, 1
-IFL I, 14
+IFL I, 16
 	SET PC, key_update_loop
 
 ; 0: W
@@ -155,6 +155,15 @@ IFE [key_e_down], 1
 SET B, [throttle]
 HWI 7
 
+; harpoon0
+IFE [key_1_down], 1
+	JSR fireHarpoon0
+SET [key_1_down], 0
+; harpoon1
+IFE [key_2_down], 1
+	JSR fireHarpoon1
+SET [key_2_down], 0
+
 IFE [key_t_down], 1
 	JSR throttle_up
 IFE [key_g_down], 1
@@ -193,6 +202,7 @@ DAT 0x0000
 ; Interrupt handler
 ; ==============================
 :irq_handler
+IAQ 1
 IFE A, [keyboard_hwid]
 	JSR keyboard_irq_handler
 IFE A, [radio1_hwid]
@@ -227,7 +237,7 @@ SET PC, POP
 :str_throttle
 DAT "Thrl    %", 0
 :str_title
-DAT "MG 2.0a8", 0
+DAT "MG 2.0a10", 0
 :str_radio1
 DAT "Radio1", 0
 :str_radio2
@@ -239,13 +249,13 @@ DAT "Ops", 0
 :str_sensors
 DAT "Sensors", 0
 :str_intro1
-DAT "        MG Helm 2.0 alpha8      ", 0
+DAT "        MG Helm 2.0 alpha10     ", 0
 :str_intro2
 DAT "   USE WASD+QE for movement.    ", 0
 :str_intro4
 DAT "   T for Throttle up, G Down    ", 0
 :str_intro5
-DAT "   F fires lasers,              ", 0
+DAT "  F fires lasers, 1,2 harpoon   ", 0
 :str_intro3
 DAT "   Arrow Keys control menus     ", 0
 :str_fuel
@@ -471,6 +481,9 @@ JSR write_string
 SET [screen_cursor], 0x00E0
 SET A, str_rightdoor
 JSR write_string
+SET [screen_cursor], 0x0100
+SET A, str_reardoor
+JSR write_string
 
 SET [screen_cursor], 0x0140
 SET A, str_fuel
@@ -505,6 +518,7 @@ IFE [radio_mode], 3
 		JSR change1C
 IFE [radio_mode], 3
 	IFE [rcursor3], 6
+
 		JSR change2C
 IFE [radio_mode], 3
 	IFE [rcursor3], 3
@@ -577,7 +591,7 @@ IFE [key_right_down], 1
 	IFE [ops_mode], 1
 		JSR ops_right
 
-IFE [ocursor], 6
+IFE [ocursor], 7
 	SET [ocursor], 0
 SET PC, POP
 
