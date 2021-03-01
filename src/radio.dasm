@@ -824,29 +824,3 @@ SET Z, [fg_light_grey]
 SET A, str_m_ago
 JSR write_string
 SET PC, exit_time
-
-
-; Strings AND Constants
-; =======================
-
-:stationIDB
-DAT 0xACF7
-:stationIDC
-DAT 0x0045
-
-:str_SET
-DAT "SET", 0
-:str_send
-DAT "SEND", 0
-:str_stop
-DAT " STOP ", 0
-:str_repeat
-DAT "REPEAT", 0
-:str_sending_message
-DAT "SOS Send Help", 0
-:str_s_ago
-DAT "s ago.", 0
-:str_m_ago
-DAT "m ago.", 0
-:str_h_ago
-DAT "h ago.", 0

@@ -32,7 +32,8 @@ JSR check_hw
 JSR intro_screen
 ; Assumes 8 thrusters 2 per side
 JSR setup_thrusters
-; Assumes standard sensor 2000m range 120 arc
+; Assumes 2 standard sensor 2000m range 120 arc
+; Assumes 2 harpoons and 4 doors
 
 ; Ready to go
 ; ==============================
@@ -227,52 +228,6 @@ SET PC, POP
 :keyboard_irq_handler
 SET [keys_changed], 1
 SET PC, POP
-
-
-
-
-
-; Strings AND Constants
-; =======================
-:str_throttle
-DAT "Thrl    %", 0
-:str_title
-DAT "MG 2.0a10", 0
-:str_radio1
-DAT "Radio1", 0
-:str_radio2
-DAT "Radio2", 0
-:str_radio3
-DAT "Transmit", 0
-:str_ops
-DAT "Ops", 0
-:str_sensors
-DAT "Sensors", 0
-:str_intro1
-DAT "        MG Helm 2.0 alpha10     ", 0
-:str_intro2
-DAT "   USE WASD+QE for movement.    ", 0
-:str_intro4
-DAT "   T for Throttle up, G Down    ", 0
-:str_intro5
-DAT "  F fires lasers, 1,2 harpoon   ", 0
-:str_intro3
-DAT "   Arrow Keys control menus     ", 0
-:str_fuel
-DAT " Fuel: Hydrogen     L           ", 0
-:str_intro6
-DAT "Press any key to continue...", 0
-:str_channel
-DAT " Channel ", 0
-:str_signal
-DAT " Signal", 0
-:str_angle
-DAT "Angle", 0
-:str_message
-DAT "Message", 0
-
-
-
 
 ; Functions
 ; ==============================
@@ -718,7 +673,8 @@ DAT 0x0000
 .include 'MGhelm\src\drivers.dasm'    ; Hardware support
 .include 'MGhelm\src\thrusters.dasm'  ; Thrusters and Lasers
 .include 'MGhelm\src\stdio.dasm'      ; Functions for writing to screen
-.include 'MGhelm\src\sensors.dasm'    ; support functions and strings for Sensor display
+.include 'MGhelm\src\sensors.dasm'    ; support functions for Sensor display
 .include 'MGhelm\src\ops.dasm'        ; functions for ops screen
 .include 'MGhelm\src\radio.dasm'      ; functions for radio controls
 .include 'MGhelm\src\nav.dasm'        ; possible upcoming nav screen
+.include 'MGhelm\src\strings.dasm'    ; strings
