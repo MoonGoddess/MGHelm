@@ -161,13 +161,13 @@ SET PC, exit_type
 	SET A, str_astbits
 SET PC, exit_type
 
-:type_3
-IFE [contact_type], 0x0003
-	SET A, str_manmade
-IFE [contact_type], 0x0003
-	IFE PEEK, 0xACF7
-		IFE C, 0x0045
-			SET A, str_station
+;:type_3
+;IFE [contact_type], 0x0003
+;	SET A, str_manmade
+;IFE [contact_type], 0x0003
+;	IFE PEEK, 0xACF7
+;		IFE C, 0x0045
+;			SET A, str_station
 IFE [contact_type], 0x0003
 	IFE [contact_size], 0x000D
 		SET A, str_ship
@@ -186,9 +186,6 @@ IFE [contact_type], 0x0003
 		
 SET PC, exit_type
 
-; Moon_Goddess  F448213E
-; THplusplus    1FB069D9
-; asbestospants 7BDAFC9D
 
 
 
@@ -302,10 +299,7 @@ ADD [screen_cursor], 1
 SET X, POP
 SET PC, POP
 
-; Strings AND Constants
-; =======================
-:str_heading
-DAT "  Type:        ID:    Range: Ang", 0
+
                                      
 
 
