@@ -133,28 +133,27 @@ SET Z, POP
 SET PC, POP
 
 :type_1
+SET A, str_astunknown
 IFE [contact_type], 0x0001
-	SET A, str_astblue
+	SET A, str_type001
 IFE [contact_type], 0x0101
-	SET A, str_astred
+	SET A, str_type101
 IFE [contact_type], 0x0201
-	SET A, str_astgold
+	SET A, str_type201
 IFE [contact_type], 0x0301
-	SET A, str_astblack
+	SET A, str_type301
 IFE [contact_type], 0x0401
-	SET A, str_astgreen
+	SET A, str_type401
 IFE [contact_type], 0x0501
-	SET A, str_astrock
+	SET A, str_type501
 IFE [contact_type], 0x0601
-	SET A, str_astrock
+	SET A, str_type601
 IFE [contact_type], 0x0701
-	SET A, str_astrock
+	SET A, str_type701
 IFE [contact_type], 0x0801
-	SET A, str_astrock
+	SET A, str_type801
 IFE [contact_type], 0x0901
-	SET A, str_astrock
-IFE A, 0xffff
-	SET A, str_astunknown
+	SET A, str_type901
 SET PC, exit_type
 
 :type_2
@@ -170,7 +169,7 @@ IFE [contact_type], 0x0003
 		IFE C, 0x0045
 			SET A, str_station
 IFE [contact_type], 0x0003
-	IFE [contact_size], 0x000C
+	IFE [contact_size], 0x000D
 		SET A, str_ship
 IFE [contact_type], 0x0003
 	IFE PEEK, 0x6FC3

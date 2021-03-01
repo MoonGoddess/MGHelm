@@ -209,8 +209,8 @@ SET J, A
 :write_string_loop
 SET B, [J]
 BOR B, Z
-IFE Z, 0x0000
-	BOR B, 0x7000
+;IFE Z, 0x0000
+;	BOR B, 0x7000
 SET [I], B
 ADD I, 1
 ADD J, 1
