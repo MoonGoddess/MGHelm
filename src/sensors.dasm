@@ -106,6 +106,7 @@ SET X, POP
 SET PC, POP
 
 :write_type
+SET PUSH, J
 SET PUSH, Z
 SET PUSH, B
 SET A, 0xffff
@@ -128,8 +129,10 @@ IFE A, 0xffff
 	SET A, str_unknown
 
 JSR write_string
+
 SET B, POP
 SET Z, POP
+SET J, POP
 SET PC, POP
 
 :type_1
@@ -168,25 +171,37 @@ SET PC, exit_type
 ;	IFE PEEK, 0xACF7
 ;		IFE C, 0x0045
 ;			SET A, str_station
-IFE [contact_type], 0x0003
-	IFE [contact_size], 0x000D
-		SET A, str_ship
-IFE [contact_type], 0x0003
-	IFE PEEK, 0x6FC3
-		IFE C, 0xFEED
-			SET A, str_mystery
-IFE [contact_type], 0x0003
-	IFE PEEK, 0xBC1C
-		IFE C, 0x31F9
-			SET A, str_moon
-IFE [contact_type], 0x0003
-	IFE PEEK, 0x53E3
-		IFE C, 0x3034
-			SET A, str_tomtom
-		
+;IFE [contact_type], 0x0003
+;	IFE [contact_size], 0x000D
+;		SET A, str_ship
+;IFE [contact_type], 0x0003
+;	IFE PEEK, 0x6FC3
+;		IFE C, 0xFEED
+;			SET A, str_mystery
+;IFE [contact_type], 0x0003
+;	IFE PEEK, 0xBC1C
+;		IFE C, 0x31F9
+;			SET A, str_moon
+;IFE [contact_type], 0x0003
+;	IFE PEEK, 0x53E3
+;		IFE C, 0x3034
+;			SET A, str_tomtom
+;		
+;SET PC, exit_type
+
+:type_3
+SET A, str_manmade
+SET J, 0
+SET Z, type_3_contacts
+:type_3_loop
+IFE PEEK, [Z]
+	IFE C, [Z+1]
+		SET A, Z+2
+ADD J, 1
+ADD Z, 15
+IFN J, num_type_3
+	SET PC, type_3_loop
 SET PC, exit_type
-
-
 
 
 :type_8
