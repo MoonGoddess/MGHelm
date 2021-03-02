@@ -196,12 +196,17 @@ SET Z, type_3_contacts
 :type_3_loop
 IFE PEEK, [Z]
 	IFE C, [Z+1]
-		SET A, Z+2
+		JSR type_3_set
 ADD J, 1
-ADD Z, 15
 IFN J, num_type_3
 	SET PC, type_3_loop
 SET PC, exit_type
+
+:type_3_set
+ADD Z, 2
+SET A, [Z] 
+ADD Z, 13
+SET PC, POP
 
 
 :type_8
