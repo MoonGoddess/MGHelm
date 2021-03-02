@@ -186,7 +186,11 @@ IFE [contact_type], 0x0003
 		
 SET PC, exit_type
 
-
+:type_3_set
+ADD Z, 2
+SET A, Z 
+ADD Z, 13
+SET PC, POP
 
 
 :type_8

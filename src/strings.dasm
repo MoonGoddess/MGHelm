@@ -10,6 +10,7 @@ DAT 0x2C02, 0x73EF, "Moon's Ship ", 0
 DAT 0x91E2, 0x04C1, "Tom's Ship  ", 0
 DAT 0xD2A4, 0xD490, "Brick's Ship", 0
 DAT 0x2E1C, 0x31D6, "ika's Ship  ", 0
+DAT 0x6499, 0x14A2, "zaz's ship  ", 0
 DAT 0x6FC3, 0xFEED, "Relic Ship  ", 0
 :num_type_3
 DAT 6
