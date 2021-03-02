@@ -108,6 +108,7 @@ SET PC, POP
 :write_type
 SET PUSH, J
 SET PUSH, Z
+SET PUSH, X
 SET PUSH, B
 SET A, 0xffff
 SET B, [contact_type]
@@ -131,6 +132,7 @@ IFE A, 0xffff
 JSR write_string
 
 SET B, POP
+SET X, POP
 SET Z, POP
 SET J, POP
 SET PC, POP
@@ -192,10 +194,10 @@ SET PC, exit_type
 :type_3
 SET A, str_manmade
 SET J, 0
-SET Z, type_3_contacts
+SET X, type_3_contacts
 :type_3_loop
-IFE PEEK, [Z]
-	IFE C, [Z+1]
+IFE PEEK, [X]
+	IFE C, [X+1]
 		JSR type_3_set
 ADD J, 1
 IFN J, num_type_3
@@ -203,9 +205,9 @@ IFN J, num_type_3
 SET PC, exit_type
 
 :type_3_set
-ADD Z, 2
-SET A, [Z] 
-ADD Z, 13
+ADD X, 2
+SET A, X 
+ADD X, 13
 SET PC, POP
 
 
