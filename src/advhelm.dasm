@@ -28,11 +28,11 @@ DAT 0x0000
 
 :start
 ; Assumes LEM1802, generic keyboard, generic clock,
-JSR check_hw
+JSR check_hw   
 JSR intro_screen
 ; Assumes 8 thrusters 2 per side
 JSR setup_thrusters
-; Assumes 2 standard sensor 2000m range 120 arc
+; Assumes 2 standard sensor 2000m range 120 arc,  Sensors currently hardcoded as there's no way to tell facing.
 ; Assumes 2 harpoons and 4 doors
 
 ; Ready to go
@@ -41,8 +41,8 @@ JSR setup_thrusters
 SET [keys_changed], 0
 IAS irq_handler
 SET A, 1
-SET B, [stationIDB]
-SET C, [stationIDC]
+SET B, [type_3_contacts]
+SET C, [type_3_contacts+1]
 HWI [radio1_hwid]
 SET A, 1
 SET B, 0x0000
