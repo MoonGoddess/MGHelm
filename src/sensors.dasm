@@ -193,7 +193,7 @@ SET PC, exit_type
 SET A, str_buoyunknown
 SET J, 0
 SET X, type_8_contacts
-:type_3_loop 
+:type_8_loop 
 IFE PEEK, [X]
 IFE C, [X+1]
     SET PC, type_8_set
