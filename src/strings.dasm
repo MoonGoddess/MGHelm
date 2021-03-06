@@ -15,12 +15,40 @@ DAT 0x6FC3, 0xFEED, "Relic Ship  ", 0
 :num_type_3
 DAT 7
 
+:type_8_contacts
+DAT 0x2513, 0x74F4, "Outer Wall  ", 0
+DAT 0xCB57, 0xF22B, "Nav Out A1  ", 0
+DAT 0x334D, 0x79CD, "Nav Out A2  ", 0
+DAT 0xE652, 0x5C54, "Nav Out A3  ", 0
+DAT 0x68CA, 0xEF38, "Nav Out A4  ", 0
+DAT 0x0FBB, 0x964B, "Nav Out B1  ", 0
+DAT 0xA503, 0xD2AA, "NavInner B2 ", 0
+DAT 0x6106, 0x423C, "NavInner B3 ", 0
+DAT 0xE566, 0x40F1, "Nav Out B4  ", 0
+DAT 0x3033, 0x3FF1, "Nav Out C1  ", 0
+DAT 0x41A3, 0x55BB, "NavInner C2 ", 0
+DAT 0xAB85, 0x76AD, "NavInner C3 ", 0
+DAT 0x92C4, 0xB6D3, "Nav Out C4  ", 0
+DAT 0x9C2E, 0xEDE2, "Nav Out D1  ", 0
+DAT 0x93EA, 0x524B, "Nav Out D2  ", 0
+DAT 0xE4BE, 0xFE36, "Nav Out D3  ", 0
+DAT 0x2B1C, 0x6096, "Nav Out D4  ", 0
+DAT 0xA8EC, 0x21FC, "Nav 1       ", 0
+DAT 0x7FC1, 0x5E9D, "Nav 2       ", 0
+DAT 0x7EDD, 0xE8ED, "Nav 3       ", 0
+DAT 0x296A, 0x7DC4, "Nav 4       ", 0
+DAT 0x09D3, 0x0C19, "Nav 5       ", 0
+DAT 0xDB1F, 0x6033, "Nav 6       ", 0
+DAT 0xE8D4, 0x345D, "Nav 7       ", 0
+:num_type_8
+DAT 24
+
 ; Strings
 ; =======================
 :str_title
-DAT "MG 2.0a10", 0
+DAT "MGa11    ", 0
 :str_intro1
-DAT "        MG Helm 2.0 alpha10     ", 0
+DAT "         MG Helm  alpha11        ", 0
 
 ;from advhelm.dasm
 :str_throttle
@@ -62,10 +90,6 @@ DAT "Hardware 0-7 expected to be     thrusters. Halting.", 0
 DAT "No keyboard found. Halting.", 0
 
 ; from nav.dasm
-:str_tomtom
-DAT "Tom's Ship  ", 0
-:str_moon
-DAT "Moon's Ship ", 0
 :str_Nav1
 DAT "Nav Out A1  ", 0
 :str_Nav2
@@ -98,12 +122,9 @@ DAT "Nav Out D2  ", 0
 DAT "Nav Out D3  ", 0
 :str_Nav16
 DAT "Nav Out D4  ", 0
-:str_station
-DAT "Station     ", 0
+
 :str_ship
 DAT "Player Ship ", 0
-:str_mystery
-DAT "Relic Ship  ", 0
 :str_manmade
 DAT "Manmade Obj ", 0
 :str_docking
@@ -126,6 +147,8 @@ DAT "Nav Buoy    ", 0
 DAT "Outer Wall  ", 0
 :str_warpgate
 DAT "Warp Gate   ", 0
+:str_harpoon
+DAT "Harpoon     ", 0
 :str_type001
 DAT "As(Sapphire)", 0
 :str_type101
