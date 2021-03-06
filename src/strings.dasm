@@ -5,43 +5,52 @@ DAT 0xACF7
 :stationIDC
 DAT 0x0045
 :type_3_contacts
-DAT 0xACF7, 0x0045, "Station     ", 0
-DAT 0x2C02, 0x73EF, "Moon's Ship ", 0
-DAT 0x91E2, 0x04C1, "Tom's Ship  ", 0
-DAT 0xD2A4, 0xD490, "Brick's Ship", 0
-DAT 0x2E1C, 0x31D6, "ika's Ship  ", 0
-DAT 0x6499, 0x14A2, "zaz's ship  ", 0
-DAT 0x6FC3, 0xFEED, "Relic Ship  ", 0
+DAT 0xACF7, 0x0045, "Main Station Core    ", 0
+DAT 0x2C02, 0x73EF, "Moon_Goddess's Ship  ", 0
+DAT 0x91E2, 0x04C1, "TomTom's Ship        ", 0
+DAT 0xD2A4, 0xD490, "Brick_btv's Ship     ", 0
+DAT 0x2E1C, 0x31D6, "ika's Ship           ", 0
+DAT 0x6499, 0x14A2, "zaz's ship           ", 0
+DAT 0x6FC3, 0xFEED, "Relic Ship           ", 0
 :num_type_3
 DAT 7
 
+
 :type_8_contacts
-DAT 0x2513, 0x74F4, "Outer Wall  ", 0
-DAT 0xCB57, 0xF22B, "Nav Out A1  ", 0
-DAT 0x334D, 0x79CD, "Nav Out A2  ", 0
-DAT 0xE652, 0x5C54, "Nav Out A3  ", 0
-DAT 0x68CA, 0xEF38, "Nav Out A4  ", 0
-DAT 0x0FBB, 0x964B, "Nav Out B1  ", 0
-DAT 0xA503, 0xD2AA, "NavInner B2 ", 0
-DAT 0x6106, 0x423C, "NavInner B3 ", 0
-DAT 0xE566, 0x40F1, "Nav Out B4  ", 0
-DAT 0x3033, 0x3FF1, "Nav Out C1  ", 0
-DAT 0x41A3, 0x55BB, "NavInner C2 ", 0
-DAT 0xAB85, 0x76AD, "NavInner C3 ", 0
-DAT 0x92C4, 0xB6D3, "Nav Out C4  ", 0
-DAT 0x9C2E, 0xEDE2, "Nav Out D1  ", 0
-DAT 0x93EA, 0x524B, "Nav Out D2  ", 0
-DAT 0xE4BE, 0xFE36, "Nav Out D3  ", 0
-DAT 0x2B1C, 0x6096, "Nav Out D4  ", 0
-DAT 0xA8EC, 0x21FC, "Nav 1       ", 0
-DAT 0x7FC1, 0x5E9D, "Nav 2       ", 0
-DAT 0x7EDD, 0xE8ED, "Nav 3       ", 0
-DAT 0x296A, 0x7DC4, "Nav 4       ", 0
-DAT 0x09D3, 0x0C19, "Nav 5       ", 0
-DAT 0xDB1F, 0x6033, "Nav 6       ", 0
-DAT 0xE8D4, 0x345D, "Nav 7       ", 0
+DAT 0x2513, 0x74F4, "Outer Wall           ", 0
+DAT 0xCB57, 0xF22B, "Nav Outer A1         ", 0
+DAT 0x334D, 0x79CD, "Nav Outer A2         ", 0
+DAT 0xE652, 0x5C54, "Nav Outer A3         ", 0
+DAT 0x68CA, 0xEF38, "Nav Outer A4         ", 0
+DAT 0x0FBB, 0x964B, "Nav Outer B1         ", 0
+DAT 0xA503, 0xD2AA, "Nav Inner B2         ", 0
+DAT 0x6106, 0x423C, "Nav Inner B3         ", 0
+DAT 0xE566, 0x40F1, "Nav Outer B4         ", 0
+DAT 0x3033, 0x3FF1, "Nav Outer C1         ", 0
+DAT 0x41A3, 0x55BB, "Nav Inner C2         ", 0
+DAT 0xAB85, 0x76AD, "Nav Inner C3         ", 0
+DAT 0x92C4, 0xB6D3, "Nav Outer C4         ", 0
+DAT 0x9C2E, 0xEDE2, "Nav Outer D1         ", 0
+DAT 0x93EA, 0x524B, "Nav Outer D2         ", 0
+DAT 0xE4BE, 0xFE36, "Nav Outer D3         ", 0
+DAT 0x2B1C, 0x6096, "Nav Outer D4         ", 0
+DAT 0xA8EC, 0x21FC, "Nav 1                ", 0
+DAT 0x7FC1, 0x5E9D, "Nav 2                ", 0
+DAT 0x7EDD, 0xE8ED, "Nav 3                ", 0
+DAT 0x296A, 0x7DC4, "Nav 4                ", 0
+DAT 0x09D3, 0x0C19, "Nav 5                ", 0
+DAT 0xDB1F, 0x6033, "Nav 6                ", 0
+DAT 0xE8D4, 0x345D, "Nav 7                ", 0
+DAT 0x26AA, 0x39D4, "Station Corner A-B   ", 0
+DAT 0x6AE5, 0x098D, "Station Corner B-C   ", 0
+DAT 0x7068, 0x0509, "Station Corner C-D   ", 0
+DAT 0xD3E7, 0xF3DB, "Station Corner D-A   ", 0
+DAT 0x24A9, 0xDE36, "Station Arm A        ", 0
+DAT 0x03A1, 0x746B, "Station Arm B        ", 0
+DAT 0x93E0, 0xCB70, "Station Arm C        ", 0
+DAT 0x04B7, 0xE345, "Station Arm D        ", 0
 :num_type_8
-DAT 24
+DAT 32
 
 ; Strings
 ; =======================
@@ -90,85 +99,50 @@ DAT "Hardware 0-7 expected to be     thrusters. Halting.", 0
 DAT "No keyboard found. Halting.", 0
 
 ; from nav.dasm
-:str_Nav1
-DAT "Nav Out A1  ", 0
-:str_Nav2
-DAT "Nav Out A2  ", 0
-:str_Nav3
-DAT "Nav Out A3  ", 0
-:str_Nav4
-DAT "Nav OUT A4  ", 0
-:str_Nav5
-DAT "Nav Out B1  ", 0
-:str_Nav6
-DAT "NavInner B2 ", 0
-:str_Nav7
-DAT "NavInner B3 ", 0
-:str_Nav8
-DAT "Nav Out B4  ", 0
-:str_Nav9
-DAT "Nav Out C1  ", 0
-:str_Nav10
-DAT "NavInner C2 ", 0
-:str_Nav11
-DAT "NavInner C3 ", 0
-:str_Nav12
-DAT "Nav Out C4  ", 0
-:str_Nav13
-DAT "Nav Out D1  ", 0
-:str_Nav14
-DAT "Nav Out D2  ", 0
-:str_Nav15
-DAT "Nav Out D3  ", 0
-:str_Nav16
-DAT "Nav Out D4  ", 0
-
 :str_ship
-DAT "Player Ship ", 0
+DAT "Player Ship          ", 0
 :str_manmade
-DAT "Manmade Obj ", 0
+DAT "Manmade Object       ", 0
 :str_docking
-DAT "Dock Buoy   ", 0
+DAT "Docking Buoy         ", 0
 :str_type108
-DAT "Haz Buoy    ", 0
+DAT "Hazard Buoy          ", 0
 :str_buoyunknown
-DAT "Buoy(Unknwn)", 0
+DAT "Buoy (Unknown)       ", 0
 :str_astbits
-DAT "Ast bits    ", 0
+DAT "Asteroid bits        ", 0
 :str_astunknown
-DAT "Ast(Unknown)", 0
+DAT "Asteroid (Unknown)   ", 0
 :str_typeA
-DAT "Ship Debris ", 0
+DAT "Ship Debris          ", 0
 :str_unknown
-DAT "Unknown     ", 0
+DAT "Unknown Contact Type ", 0
 :str_type208
-DAT "Nav Buoy    ", 0
-:str_outerwall
-DAT "Outer Wall  ", 0
+DAT "Navigation Buoy      ", 0
 :str_warpgate
-DAT "Warp Gate   ", 0
+DAT "Warp Gate            ", 0
 :str_harpoon
-DAT "Harpoon     ", 0
+DAT "Harpoon              ", 0
 :str_type001
-DAT "As(Sapphire)", 0
+DAT "Asteroid (Sapphire)  ", 0
 :str_type101
-DAT "Ast (Ruby)  ", 0
+DAT "Asteroid (Ruby)      ", 0
 :str_type201
-DAT "Ast (Topaz) ", 0
+DAT "Asteriod (Topaz)     ", 0
 :str_type301
-DAT "As(Obsidian)", 0
+DAT "Asteroid (Obsidian)  ", 0
 :str_type401
-DAT "Ast(Emerald)", 0
+DAT "Asteroid (Emerald)   ", 0
 :str_type501
-DAT "Ast (Hydrox)", 0
+DAT "Asteroid (H2 and O2) ", 0
 :str_type601
-DAT "Ast (Hydrox)", 0
+DAT "Asteroid (H2 and O2) ", 0
 :str_type701
-DAT "Ast (Hydrox)", 0
+DAT "Asteroid (H2 and O2) ", 0
 :str_type801
-DAT "Ast (Hydrox)", 0
+DAT "Asteroid (H2 and O2) ", 0
 :str_type901
-DAT "Ast (Hydrox)", 0
+DAT "Asteroid (H2 and O2) ", 0
 
 
 
@@ -223,7 +197,7 @@ DAT "d ago.", 0
 
 ; from sensors.dasm
 :str_heading
-DAT "  Type:        ID:    Range: Ang", 0
+DAT "  Type:               Range: Ang", 0
 
 
 ;Font 
