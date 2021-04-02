@@ -1,0 +1,204 @@
+; canvas location on the screen
+:canvas_offset_x
+	DAT 6
+:canvas_offset_y
+	DAT 1
+
+:canvas_width_in_char
+	DAT 21
+
+; 128 chars in font // canvas_width_in_char
+:chars_in_canvas
+	DAT 126
+
+; two fonts used:
+; * 0xB000
+; * 0xB1ff
+; current_font points to back
+; buffer used to drawing at the moment.
+:back_buffer_font
+	DAT 0xB000
+
+:first_font
+	DAT 0xB000
+:second_font
+	DAT 0xB1ff
+
+; calculated in :canvas_setup
+:carret_return_position
+	DAT 0
+
+:canvas_setup
+	SET [carret_return_position], [canvas_width_in_char]
+	ADD [carret_return_position], [canvas_offset_x]
+	SUB [carret_return_position], 1
+
+	; we need to draw all chars once
+	; after that - just swap fonts to change image
+
+	JSR clear_back_buffer
+	JSR map_font
+	JSR draw_screen_once
+	JSR swap_font
+
+	SET PC, POP
+
+; clears selected font. this code
+; calls right after current_font pointer
+; swap, but before mapping current_font
+; to display hw.
+:clear_back_buffer
+	SET PUSH, X
+	SET PUSH, J
+
+	SET X, [back_buffer_font]
+	SET J, 0
+    :clear_back_buffer_loop
+        SET [X], 0
+        ADD X, 1
+        ADD J, 1
+        IFL J, 256
+            SET PC, clear_back_buffer_loop
+
+    SET J, POP
+    SET X, POP
+    SET PC, POP
+
+; ----------- Drawing stuff ---------
+:draw_screen_once
+	SET PUSH, A
+	SET PUSH, X
+ 	SET PUSH, Y
+
+	; canvas location on screen
+	SET A, 0
+	SET X, [canvas_offset_x]
+	SET Y, [canvas_offset_y]
+	JSR set_cursor
+
+    :dump_to_screen
+        JSR write_char
+
+        ; cut screen if line is over
+        ADD X, 1
+        IFG X, [carret_return_position]
+            JSR short_carret
+
+        ADD A, 1
+        IFL A, [chars_in_canvas]
+            SET PC, dump_to_screen
+
+        SET Y, POP
+        SET X, POP
+        SET A, POP
+
+	SET PC, POP
+
+; next line
+:short_carret
+	SET X, [canvas_offset_x]
+	ADD Y, 1
+
+	JSR set_cursor
+
+	SET PC, POP
+
+; set font to hw monitor
+:map_font
+	SET PUSH, A
+	SET PUSH, B
+
+	SET A, 1
+	SET B, [back_buffer_font]
+	HWI [hw_display]
+
+	SET B, POP
+	SET A, POP
+	SET PC, POP
+
+; swap buffers
+:swap_font
+	JSR map_font
+
+	IFE [back_buffer_font], [first_font]
+		SET PC, first_font_label
+	SET PC, second_font_label
+
+    :first_font_label
+        SET [back_buffer_font], [second_font]
+        SET PC, swap_font_end
+
+    :second_font_label
+        SET [back_buffer_font], [first_font]
+        SET PC, swap_font_end
+
+    :swap_font_end
+	SET PC, POP
+
+
+; ----------- Pixel painting ------------
+:set_pixel
+	SET PUSH, A
+	SET PUSH, I
+	SET PUSH, X
+	SET PUSH, Y
+
+	; locate char to modify
+	; every char is 4x8 pixels
+	DIV X, 4
+	DIV Y, 8
+
+	MUL Y, [canvas_width_in_char]
+	ADD Y, X
+
+	MUL Y, 2 ; 2 bytes per char
+	ADD Y, [back_buffer_font]
+
+	SET I, Y	; hi-word of char to modify
+
+	; locate position inside char
+	SET Y, POP
+	SET X, POP
+	SET PUSH, X
+	SET PUSH, Y
+
+	MOD X, 4
+	MOD Y, 8
+
+	; modify char
+	IFL X, 2
+		JSR mod_left
+	IFG X, 1
+		JSR mod_right
+
+	SET Y, POP
+	SET X, POP
+	SET I, POP
+	SET A, POP
+	SET PC, POP
+
+; modify left part of the char
+:mod_left
+	IFE X, 0 ; hi word
+		ADD Y, 8
+
+	SET A, 0x1
+	SHL A, Y
+
+	BOR [I], A
+	SET PC, POP
+
+; modify right part of the char
+:mod_right
+	IFE X, 2	; hi word
+		ADD Y, 8
+
+	SET A, 0x1
+	SHL A, Y
+
+	ADD I, 1
+	BOR [I], A
+	SET PC, POP
+
+;
+;

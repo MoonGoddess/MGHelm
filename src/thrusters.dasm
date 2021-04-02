@@ -61,7 +61,7 @@ DAT 0x0000
 
 ; Check thrusters
 ; ==============================
-:setup_thrusters
+:init_thrusters
 HWN J
 IFL J, 8
 	SET PC, no_thrusters

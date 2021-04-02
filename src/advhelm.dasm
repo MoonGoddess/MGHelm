@@ -28,12 +28,18 @@ DAT 0x0000
 
 :start
 ; Assumes LEM1802, generic keyboard, generic clock,
-JSR check_hw   
+JSR detect_hw   
+JSR init_screen
+JSR init_keyboard
+JSR init_clock
 JSR intro_screen
-; Assumes 8 thrusters 2 per side
-JSR setup_thrusters
 ; Assumes 2 standard sensor 2000m range 120 arc,  Sensors currently hardcoded as there's no way to tell facing.
+JSR init_radio1
+JSR init_radio2
 ; Assumes 2 harpoons and 4 doors
+JSR init_harpoon
+; Assumes 8 thrusters 2 per side
+JSR init_thrusters
 
 ; Ready to go
 ; ==============================
@@ -196,8 +202,6 @@ SET PC, wait_for_key_loop
 
 
 
-:catch_fire
-DAT 0x0000
 
 
 ; Interrupt handler
@@ -678,3 +682,6 @@ DAT 0x0000
 .include 'MGhelm\src\radio.dasm'      ; functions for radio controls
 .include 'MGhelm\src\nav.dasm'        ; possible upcoming nav screen
 .include 'MGhelm\src\strings.dasm'    ; strings
+.include 'MGhelm\src\math.dasm'       ; math
+;.include 'MGhelm\src\gscanner.dasm'   ; Graphical Scanner
+;.include 'MGhelm\src\drawing.dasm'    ; Drawing functions
