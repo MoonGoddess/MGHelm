@@ -81,7 +81,7 @@ SET PC, POP
 
 :ops_left
 IFE [ocursor], 0
-	JSR radio3_mode_func
+	JSR helm_mode_func
 IFE [ocursor], 1
 	JSR clamps_down
 IFE [ocursor], 2
@@ -93,7 +93,7 @@ SET PC, POP
 
 :ops_right
 IFE [ocursor], 0
-	JSR helm_mode_func
+	JSR radio1_mode_func
 IFE [ocursor], 1
 	JSR clamps_up	
 IFE [ocursor], 2

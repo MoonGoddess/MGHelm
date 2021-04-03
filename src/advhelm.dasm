@@ -1,18 +1,14 @@
 SET PC, start
 ; Includes and setup variables
 :major_version
-DAT 0x0002
+DAT 0x0000
 :minor_version
 DAT 0x0000
 
 
 
-:helm_mode                           ; Flag to tell the system do display the helm and sensors screen, set to true at first
+:mode                           ; which tab is active, 0 scanner, 1 helm, 2 ops, 3 radio 1, 4 radio 2, 5 radio 3
 DAT 0x0001
-:radio_mode                          ; Flag to display radio modes, 1- radio 1, 2 radio 2, 3 transmit screeen
-DAT 0x0000
-:ops_mode                            ; flag to display ops mode
-DAT 0x0000
 :hcursor                             ;  which line of helm mode is active, currently unused
 DAT 0x0000
 :rcursor1                            ; which line of radio1 is active, currently unused
@@ -73,19 +69,21 @@ JSR helm_mode_func
 :wait_for_key_loop
 SET [screen_cursor], 27
 SET J, 3
-IFE [helm_mode], 1
+IFE [mode], 1
 	JSR write_throttle
 SET [screen_cursor], 0x0060
-IFE [helm_mode], 1
-IFN [fsensor_hwid], 0xffff
-	JSR display_sensors
-IFE [ops_mode], 1
+IFE [mode], 1
+	IFN [fsensor_hwid], 0xffff
+		JSR display_sensors
+
+
+IFE [mode], 2
 	JSR display_ops
-IFE [radio_mode], 1
+IFE [mode], 3
 	JSR display_radio1
-IFE [radio_mode], 2
+IFE [mode], 4
 	JSR display_radio2
-IFE [radio_mode], 3
+IFE [mode], 5
 	JSR display_radio3
 IFE [radio_repeating1], 1
 	JSR radio1_repeat 
@@ -182,21 +180,38 @@ IFE [key_enter_down], 1
 IFE [key_f_down], 1
 	JSR fire_laser
 
-IFE [ops_mode], 1
+IFE [mode], 0
+	JSR scanner_draw
+
+IFE [mode], 0
+	IFE [key_z_down], 1
+		SUB [scanner_zoom], 1
+IFE [mode], 0
+	IFE [key_x_down], 1
+		ADD [scanner_zoom], 1
+
+IFE [mode], 2
 	JSR ops_control
 
-IFN [radio_mode], 0
+IFG [mode], 2
 	JSR radio_control
 
 
+IFE [key_left_down], 1
+	IFE [mode], 0
+		JSR scan_exit_radio
 
 IFE [key_left_down], 1
-	IFE [helm_mode], 1
+	IFE [mode], 1
+		JSR scanner_mode_func
+
+IFE [key_right_down], 1
+	IFE [mode], 1
 		JSR ops_mode_func
 
 IFE [key_right_down], 1
-	IFE [helm_mode], 1
-		JSR radio1_mode_func
+	IFE [mode], 0
+		JSR scan_exit_helm
 
 SET PC, wait_for_key_loop
 
@@ -263,12 +278,45 @@ SET A, POP
 SET Z, POP
 SET PC, POP
 
+:scanner_mode_func
+JSR map_font
+SET [video_ram], 0x8400
+SET A, 0
+SET B, [video_ram]
+HWI [screen_hwid]
+SET [mode], 0
+JSR canvas_setup
+JSR scanner_draw
+
+SET PC, POP
+
+:scan_exit_helm
+SET A, 1
+SET B, font
+HWI [screen_hwid]
+SET [video_ram], 0x8000
+SET A, 0
+SET B, [video_ram]
+HWI [screen_hwid]
+
+JSR helm_mode_func
+SET PC, POP
+
+:scan_exit_radio
+SET A, 1
+SET B, font
+HWI [screen_hwid]
+SET [video_ram], 0x8000
+SET A, 0
+SET B, [video_ram]
+HWI [screen_hwid]
+JSR radio3_mode_func
+SET PC, POP
+
 :helm_mode_func
 SET PUSH, Z
 SET PUSH, A
-SET [radio_mode], 0
-SET [ops_mode], 0
-SET [helm_mode], 1
+SET [mode], 1
 JSR clear_screen
 SET Z, 0xB000
 SET A, str_title
@@ -299,9 +347,7 @@ SET PC, POP
 SET PUSH, Z
 SET PUSH, A
 SET [rcursor1], 0
-SET [radio_mode], 1
-SET [ops_mode], 0
-SET [helm_mode], 0
+SET [mode], 3
 JSR clear_screen
 SET Z, 0xB000
 SET A, str_title
@@ -337,9 +383,7 @@ SET PC, POP
 SET PUSH, Z
 SET PUSH, A
 SET [rcursor2], 0
-SET [radio_mode], 2
-SET [ops_mode], 0
-SET [helm_mode], 0
+SET [mode], 4
 JSR clear_screen
 SET Z, 0xB000
 SET A, str_title
@@ -373,9 +417,7 @@ SET PC, POP
 SET PUSH, Z
 SET PUSH, A
 ;SET [rcursor3], 0
-SET [radio_mode], 3
-SET [ops_mode], 0
-SET [helm_mode], 0
+SET [mode], 5
 JSR clear_screen
 SET Z, 0xB000
 SET A, str_title
@@ -408,9 +450,7 @@ SET PC, POP
 :ops_mode_func
 SET PUSH, Z
 SET PUSH, A
-SET [radio_mode], 0
-SET [ops_mode], 1
-SET [helm_mode], 0
+SET [mode], 2
 JSR clear_screen
 SET Z, 0xB000
 SET A, str_title
@@ -454,54 +494,54 @@ SET Z, POP
 SET PC, POP
 
 :pressed_enter
-IFE [radio_mode], 1
+IFE [mode], 3
 	IFE [rcursor1], 1
 		JSR change1B
-IFE [radio_mode], 2
+IFE [mode], 4
 	IFE [rcursor2], 1
 		JSR change2B
-IFE [radio_mode], 1
+IFE [mode], 3
 	IFE [rcursor1], 2
 		JSR change1C
-IFE [radio_mode], 2
+IFE [mode], 4
 	IFE [rcursor2], 2
 		JSR change2C
-IFE [radio_mode], 3
+IFE [mode], 3
 	IFE [rcursor3], 1
 		JSR change1B
-IFE [radio_mode], 3
+IFE [mode], 5
 	IFE [rcursor3], 5
 		JSR change2B
-IFE [radio_mode], 3
+IFE [mode], 5
 	IFE [rcursor3], 2
 		JSR change1C
-IFE [radio_mode], 3
+IFE [mode], 5
 	IFE [rcursor3], 6
 
 		JSR change2C
-IFE [radio_mode], 3
+IFE [mode], 5
 	IFE [rcursor3], 3
 		JSR radio1_send
-IFE [radio_mode], 3
+IFE [mode], 5
 	IFE [rcursor3], 7
 		JSR radio2_send
-IFE [radio_mode], 3
+IFE [mode], 5
 	IFE [rcursor3], 4
 		IFE [radio_repeating1], 0
 			SET PC, radio1_repeatswitch_on
-IFE [radio_mode], 3
+IFE [mode], 5
 	IFE [rcursor3], 8
 		IFE [radio_repeating2], 0
 			SET PC, radio2_repeatswitch_on
-IFE [radio_mode], 3
+IFE [mode], 5
 	IFE [rcursor3], 4
 		IFE [radio_repeating1], 1
 			SET PC, radio1_repeatswitch_off
-IFE [radio_mode], 3
+IFE [mode], 5
 	IFE [rcursor3], 8
 		IFE [radio_repeating2], 1
 			SET PC, radio2_repeatswitch_off
-IFE [radio_mode], 3
+IFE [mode], 5
 	IFE [rcursor3], 9
 		SET PC, change_message
 SET [key_enter_down], 0
@@ -530,24 +570,19 @@ SET PC, POP
 :ops_control
 
 IFE [key_up_down], 1
-	IFE [ops_mode], 1
 		IFE [ocursor], 0
 			SET [ocursor], 6
 IFE [key_up_down], 1
-	IFE [ops_mode], 1
 		IFG [ocursor], 0
 			SUB [ocursor], 1
 
 IFE [key_down_down], 1
-	IFE [ops_mode], 1
 		ADD [ocursor], 1
 
 IFE [key_left_down], 1
-	IFE [ops_mode], 1
 		JSR ops_left
 
 IFE [key_right_down], 1
-	IFE [ops_mode], 1
 		JSR ops_right
 
 IFE [ocursor], 7
@@ -557,108 +592,108 @@ SET PC, POP
 :radio_control
 
 IFE [key_up_down], 1
-	IFE [radio_mode], 1
+	IFE [mode], 2
 		IFE [rcursor1], 0
 			SET [rcursor1], 1
 
 IFE [key_up_down], 1
-	IFE [radio_mode], 2
+	IFE [mode], 3
 		IFE [rcursor2], 0
 			SET [rcursor2], 7
 IFE [key_down_down], 1
-	IFE [radio_mode], 1
+	IFE [mode], 2
 		IFE [rcursor1], 0
 			SET [rcursor1], 1
 
 
 IFE [key_up_down], 1
-	IFE [radio_mode], 1
+	IFE [mode], 2
 		IFG [rcursor1], 0
 			SET [rcursor1], 0
 IFE [key_up_down], 1
-	IFE [radio_mode], 2
+	IFE [mode], 3
 		IFG [rcursor2], 0
 			SUB [rcursor2], 1
 
 
 ;IFE [key_down_down], 1
-;	IFE [radio_mode], 1
+;	IFE [mode], 3
 ;		IFG [rcursor1], 0
 ;			SET [rcursor1], 0
 IFE [key_down_down], 1
-	IFE [radio_mode], 2
+	IFE [mode], 3
 		ADD [rcursor2], 1
 		
 IFE [key_down_down], 1
-	IFE [radio_mode], 2
+	IFE [mode], 3
 		IFG [rcursor2], 6
 			SET [rcursor2], 0
 
 IFE [key_left_down], 1
-	IFN [radio_mode], 0
+	IFG [mode], 2
 		JSR radio_left
 
 IFE [key_right_down], 1
-	IFN [radio_mode], 0
+	IFG [mode], 2
 		JSR radio_right
 
 IFE [key_up_down], 1
-	IFE [radio_mode], 3
+	IFE [mode], 5
 		IFE [rcursor3], 0
 			SET [rcursor3], 9
 IFE [key_down_down], 1
-	IFE [radio_mode], 3
+	IFE [mode], 5
 		IFE [rcursor3], 9
 			SET [rcursor3], 0
 IFE [key_up_down], 1
-	IFE [radio_mode], 3
+	IFE [mode], 5
 		IFL [rcursor3], 5
 			IFG [rcursor3], 0
 			 SET [rcursor3], 0
 
 IFE [key_down_down], 1
-	IFE [radio_mode], 3
+	IFE [mode], 5
 	 IFG [rcursor3], 4
 		SET [rcursor3], 9
 
 IFE [key_down_down], 1
-	IFE [radio_mode], 3
+	IFE [mode], 5
 		IFE [rcursor3], 1
 			SET [rcursor3], 5
 IFE [key_down_down], 1
-	IFE [radio_mode], 3
+	IFE [mode], 5
 		IFE [rcursor3], 2
 			SET [rcursor3], 6
 IFE [key_down_down], 1
-	IFE [radio_mode], 3
+	IFE [mode], 5
 		IFE [rcursor3], 3
 			SET [rcursor3], 7
 IFE [key_down_down], 1
-	IFE [radio_mode], 3
+	IFE [mode], 5
 		IFE [rcursor3], 4
 			SET [rcursor3], 8
 IFE [key_up_down], 1
-	IFE [radio_mode], 3
+	IFE [mode], 5
 		IFE [rcursor3], 5
 			SET [rcursor3], 1
 IFE [key_up_down], 1
-	IFE [radio_mode], 3
+	IFE [mode], 5
 		IFE [rcursor3], 6
 			SET [rcursor3], 2
 IFE [key_up_down], 1
-	IFE [radio_mode], 3
+	IFE [mode], 5
 		IFE [rcursor3], 7
 			SET [rcursor3], 3
 IFE [key_up_down], 1
-	IFE [radio_mode], 3
+	IFE [mode], 5
 		IFE [rcursor3], 9
 			SET [rcursor3], 5
 IFE [key_up_down], 1
-	IFE [radio_mode], 3
+	IFE [mode], 5
 		IFE [rcursor3], 8
 			SET [rcursor3], 4
 IFE [key_down_down], 1
-	IFE [radio_mode], 3
+	IFE [mode], 5
 		IFE [rcursor3], 0
 			SET [rcursor3], 1
 
@@ -683,5 +718,5 @@ DAT 0x0000
 .include 'MGhelm\src\nav.dasm'        ; possible upcoming nav screen
 .include 'MGhelm\src\strings.dasm'    ; strings
 .include 'MGhelm\src\math.dasm'       ; math
-;.include 'MGhelm\src\gscanner.dasm'   ; Graphical Scanner
-;.include 'MGhelm\src\drawing.dasm'    ; Drawing functions
+.include 'MGhelm\src\gscanner.dasm'   ; Graphical Scanner
+.include 'MGhelm\src\drawing.dasm'    ; Drawing functions

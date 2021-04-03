@@ -15,8 +15,7 @@
 :scanner_zoom
 	DAT 0x1
 
-:scanner_hw_sensor
-	DAT 0x0
+
 
 ; temporary variable points to
 ; lo-bits of sensor object.
@@ -28,7 +27,7 @@
 	DAT 42
 
 :scanner_setup
-	SET [scanner_hw_sensor], A
+	SET [fsensor_hwid], A
 	JSR canvas_setup
 	SET PC, POP
 
@@ -50,12 +49,12 @@
 
 	; clear sensor buffer
 	SET A, 0
-	HWI [scanner_hw_sensor]
+	HWI [fsensor_hwid]
 	SET J, 0
 
 :next_object
 	SET A, 1
-	HWI [scanner_hw_sensor]
+	HWI [fsensor_hwid]
 
 	; at this moment we have sensor object
 	; in registers A, B, C, X, Y

@@ -4,6 +4,11 @@
 :canvas_offset_y
 	DAT 1
 
+:fg_color
+	DAT 0xA000
+:bg_color
+	DAT 0x0200
+
 :canvas_width_in_char
 	DAT 21
 
@@ -110,7 +115,7 @@
 
 	SET A, 1
 	SET B, [back_buffer_font]
-	HWI [hw_display]
+	HWI [screen_hwid]
 
 	SET B, POP
 	SET A, POP
@@ -202,3 +207,28 @@
 
 ;
 ;
+
+; Calc first character position
+;  and store it to J
+:set_cursor
+	SET J, Y
+	MUL J, 32
+	ADD J, X
+	ADD J, [video_ram]
+
+	SET PC, POP
+
+; Write char A at position (X, Y)
+:write_char_at_xy
+	JSR set_cursor
+
+:write_char
+	SET PUSH, A
+
+	BOR A, [fg_color]
+	BOR A, [bg_color]
+	SET [J], A
+	ADD J, 1
+
+	SET A, POP
+	SET PC, POP
