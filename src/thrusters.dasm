@@ -27,7 +27,6 @@ DAT	0x0082 ; Arrow left
 DAT	0x0083 ; Arrow right
 DAT 0x0011 ; Return Key
 
-
 :keys_changed
 DAT 0x0000
 :keys_down
