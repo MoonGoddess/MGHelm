@@ -42,6 +42,7 @@ JSR init_thrusters
 :take_off
 SET [keys_changed], 0
 IAS irq_handler
+; Set up radios
 SET A, 1
 SET B, [type_3_contacts]
 SET C, [type_3_contacts+1]
@@ -54,6 +55,11 @@ SET X, str_sending_message
 SET Y, [sending_message]
 SET Z, 14
 JSR mem_copy
+;Shade Radar Background
+SET X, [bg_color]
+SET Y, 0x8400
+SET Z, 0x0200
+JSR mem_fill
 :wait_for_key_loop1
 IFE [keys_changed], 0
 	SET PC, wait_for_key_loop1
@@ -75,6 +81,8 @@ SET [screen_cursor], 0x0060
 IFE [mode], 1
 	IFN [fsensor_hwid], 0xffff
 		JSR display_sensors
+IFE [mode], 0
+	JSR scanner_draw
 
 
 IFE [mode], 2
@@ -104,7 +112,7 @@ SET B, [I + keys]
 HWI [keyboard_hwid]
 SET [I + keys_down], C
 ADD I, 1
-IFL I, 16
+IFL I, [num_keys]
 	SET PC, key_update_loop
 
 ; 0: W
@@ -180,14 +188,13 @@ IFE [key_enter_down], 1
 IFE [key_f_down], 1
 	JSR fire_laser
 
-IFE [mode], 0
-	JSR scanner_draw
+
 
 IFE [mode], 0
-	IFE [key_z_down], 1
+	IFE [key_x_down], 1
 		SUB [scanner_zoom], 1
 IFE [mode], 0
-	IFE [key_x_down], 1
+	IFE [key_z_down], 1
 		ADD [scanner_zoom], 1
 
 IFE [mode], 2
@@ -200,6 +207,9 @@ IFG [mode], 2
 IFE [key_left_down], 1
 	IFE [mode], 0
 		JSR scan_exit_radio
+IFE [key_right_down], 1
+	IFE [mode], 0
+		JSR scan_exit_helm
 
 IFE [key_left_down], 1
 	IFE [mode], 1
@@ -209,9 +219,7 @@ IFE [key_right_down], 1
 	IFE [mode], 1
 		JSR ops_mode_func
 
-IFE [key_right_down], 1
-	IFE [mode], 0
-		JSR scan_exit_helm
+
 
 SET PC, wait_for_key_loop
 
@@ -279,20 +287,25 @@ SET Z, POP
 SET PC, POP
 
 :scanner_mode_func
+SET [mode], 0
 JSR map_font
 SET [video_ram], 0x8400
 SET A, 0
 SET B, [video_ram]
 HWI [screen_hwid]
-SET [mode], 0
+SET A, 2
+SET B, scan_pallete
+HWI [screen_hwid]
 JSR canvas_setup
 JSR scanner_draw
-
 SET PC, POP
 
 :scan_exit_helm
 SET A, 1
 SET B, font
+HWI [screen_hwid]
+SET A, 2
+SET B, 0
 HWI [screen_hwid]
 SET [video_ram], 0x8000
 SET A, 0
@@ -305,6 +318,9 @@ SET PC, POP
 :scan_exit_radio
 SET A, 1
 SET B, font
+HWI [screen_hwid]
+SET A, 2
+SET B, 0
 HWI [screen_hwid]
 SET [video_ram], 0x8000
 SET A, 0

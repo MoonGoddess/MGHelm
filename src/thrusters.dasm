@@ -3,6 +3,10 @@
 :throttle
 DAT 0x00FF
 
+
+:num_keys
+DAT 18
+
 :keys
 DAT 'w'
 DAT 'a'

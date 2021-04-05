@@ -251,6 +251,21 @@ SET PC, POP
 ; =========
 ; End newline
 
+; Mem_fill Fuction
+; Fills a series of memory locations with a single value
+; X for value, Y for Destination, Z for lenth
+
+:mem_fill
+SET I, 0
+:mem_fill_loop
+    IFE I, Z
+        SET PC, POP ; return
+    SET [Y], X
+    ADD Y, 1
+    ADD I, 1
+    SET PC, mem_fill_loop
+
+
 ; Mem_Copy Function 
 ; Copies a series of memory locations to another location in memory. 
 ; X for Origin, Y for Destination, Z for length 
