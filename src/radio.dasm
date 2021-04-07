@@ -506,54 +506,54 @@ SET [0x6A01], C
 SET PC, POP
 
 :radio_right
-IFE [radio_mode], 3
+IFE [mode], 5
 	IFE [rcursor3], 0
-		JSR ops_mode_func
-IFE [radio_mode], 2
+		JSR scanner_mode_func
+IFE [mode], 4
 	IFE [rcursor2], 0
 		JSR radio3_mode_func
-IFE [radio_mode], 1
+IFE [mode], 3
 	IFE [rcursor1], 0
 		JSR radio2_mode_func
-IFE [radio_mode], 1
+IFE [mode], 3
 	IFE [rcursor1], 1
 		SET [rcursor1], 2
-IFE [radio_mode], 2
+IFE [mode], 4
 	IFE [rcursor2], 1
 		SET [rcursor2], 2
-IFE [radio_mode], 3
+IFE [mode], 5
 	IFG [rcursor3], 0
 		IFL [rcursor3], 4
 			ADD [rcursor3], 1
-IFE [radio_mode], 3
+IFE [mode], 5
 	IFG [rcursor3], 4
 		IFL [rcursor3], 8
 			ADD [rcursor3], 1			
 		
 SET PC, POP
 :radio_left
-IFE [radio_mode], 1
+IFE [mode], 3
 	IFE [rcursor1], 0
-		JSR helm_mode_func
-IFE [radio_mode], 2
+		JSR ops_mode_func
+IFE [mode], 4
 	IFE [rcursor2], 0
 		JSR radio1_mode_func
-IFE [radio_mode], 3
+IFE [mode], 5
 	IFE [rcursor3], 0
 		JSR radio2_mode_func
 
 
-IFE [radio_mode], 1
+IFE [mode], 3
 	IFE [rcursor1], 2
 		SET [rcursor1], 1
-IFE [radio_mode], 2
+IFE [mode], 4
 	IFE [rcursor2], 2
 		SET [rcursor2], 1
-IFE [radio_mode], 3
+IFE [mode], 5
 	IFG [rcursor3], 1
 		IFL [rcursor3], 5
 			SUB [rcursor3], 1
-IFE [radio_mode], 3
+IFE [mode], 5
 	IFG [rcursor3], 5
 		IFL [rcursor3], 9
 			SUB [rcursor3], 1	
@@ -824,29 +824,3 @@ SET Z, [fg_light_grey]
 SET A, str_m_ago
 JSR write_string
 SET PC, exit_time
-
-
-; Strings AND Constants
-; =======================
-
-:stationIDB
-DAT 0xACF7
-:stationIDC
-DAT 0x0045
-
-:str_SET
-DAT "SET", 0
-:str_send
-DAT "SEND", 0
-:str_stop
-DAT " STOP ", 0
-:str_repeat
-DAT "REPEAT", 0
-:str_sending_message
-DAT "SOS Send Help", 0
-:str_s_ago
-DAT "s ago.", 0
-:str_m_ago
-DAT "m ago.", 0
-:str_h_ago
-DAT "h ago.", 0

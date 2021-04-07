@@ -61,12 +61,12 @@ SET PC, POP
 :display_contact
 SET [contact_type], A
 JSR write_type
+;ADD [screen_cursor], 8
+;SET A, B
+;JSR write_hex
+;SET A, C
+;JSR write_hex
 ;ADD [screen_cursor], 1
-SET A, B
-JSR write_hex
-SET A, C
-JSR write_hex
-ADD [screen_cursor], 1
 SET A, Y
 DIV A, 0x0021
 SET J, 4
@@ -106,7 +106,9 @@ SET X, POP
 SET PC, POP
 
 :write_type
+SET PUSH, J
 SET PUSH, Z
+SET PUSH, X
 SET PUSH, B
 SET A, 0xffff
 SET B, [contact_type]
@@ -117,6 +119,8 @@ IFE B, 0x0002
 	SET PC, type_2
 IFE B, 0x0003
 	SET PC, type_3
+IFE B, 0x004
+	SET A, str_harpoon
 IFE B, 0x0008
 	SET PC, type_8
 IFE B, 0x0010
@@ -128,8 +132,11 @@ IFE A, 0xffff
 	SET A, str_unknown
 
 JSR write_string
+
 SET B, POP
+SET X, POP
 SET Z, POP
+SET J, POP
 SET PC, POP
 
 :type_1
@@ -161,39 +168,30 @@ SET PC, exit_type
 	SET A, str_astbits
 SET PC, exit_type
 
+
 :type_3
-IFE [contact_type], 0x0003
-	SET A, str_manmade
-IFE [contact_type], 0x0003
-	IFE PEEK, 0xACF7
-		IFE C, 0x0045
-			SET A, str_station
-IFE [contact_type], 0x0003
-	IFE [contact_size], 0x000D
-		SET A, str_ship
-IFE [contact_type], 0x0003
-	IFE PEEK, 0x6FC3
-		IFE C, 0xFEED
-			SET A, str_mystery
-IFE [contact_type], 0x0003
-	IFE PEEK, 0xBC1C
-		IFE C, 0x31F9
-			SET A, str_moon
-IFE [contact_type], 0x0003
-	IFE PEEK, 0x53E3
-		IFE C, 0x3034
-			SET A, str_tomtom
-		
+SET A, str_manmade
+IFE [contact_size], 0x000D
+	SET A, str_ship
+SET J, 0
+SET X, type_3_contacts
+:type_3_loop 
+IFE PEEK, [X]
+IFE C, [X+1]
+    SET PC, type_3_set
+
+ADD X, 24
+ADD J, 1
+IFL J, [num_type_3]
+SET PC, type_3_loop
 SET PC, exit_type
 
-; Moon_Goddess  F448213E
-; THplusplus    1FB069D9
-; asbestospants 7BDAFC9D
-
-
+:type_3_set
+ADD X, 2
+SET A, X 
+SET PC, exit_type
 
 :type_8
-
 SET A, str_buoyunknown
 IFE [contact_type], 0x0308
 	SET A, str_docking
@@ -201,76 +199,25 @@ IFE [contact_type], 0x0108
 	SET A, str_type108
 IFE [contact_type], 0x0208
 	SET A, str_type208
-IFE [contact_type], 0x0108
-	IFE PEEK, 0x2513
-		IFE C, 0x74F4
-			SET A, str_outerwall
-IFE [contact_type], 0x0208
-	IFE PEEK, 0xCB57
-		IFE C, 0xF22B
-			SET A, str_Nav1
-IFE [contact_type], 0x0208
-	IFE PEEK, 0x334D
-		IFE C, 0x79CD
-			SET A, str_Nav2
-IFE [contact_type], 0x0208
-	IFE PEEK, 0xE652
-		IFE C, 0x5C54
-			SET A, str_Nav3
-IFE [contact_type], 0x0208
-	IFE PEEK, 0x68CA
-		IFE C, 0xEF38
-			SET A, str_Nav4
-IFE [contact_type], 0x0208
-	IFE PEEK, 0x0FBB
-		IFE C, 0x964B
-			SET A, str_Nav5
-IFE [contact_type], 0x0208
-	IFE PEEK, 0xA503
-		IFE C, 0xD2AA
-			SET A, str_Nav6
-IFE [contact_type], 0x0208
-	IFE PEEK, 0x6106
-		IFE C, 0x423C
-			SET A, str_Nav7
-IFE [contact_type], 0x0208
-	IFE PEEK, 0xE566
-		IFE C, 0x40F1
-			SET A, str_Nav8
-IFE [contact_type], 0x0208
-	IFE PEEK, 0x3033
-		IFE C, 0x3FF1
-			SET A, str_Nav9
-IFE [contact_type], 0x0208
-	IFE PEEK, 0x41A3
-		IFE C, 0x55BB
-			SET A, str_Nav10
-IFE [contact_type], 0x0208
-	IFE PEEK, 0xAB85
-		IFE C, 0x76AD
-			SET A, str_Nav11
-IFE [contact_type], 0x0208
-	IFE PEEK, 0x92C4
-		IFE C, 0xB6D3
-			SET A, str_Nav12
-IFE [contact_type], 0x0208
-	IFE PEEK, 0x9C2E
-		IFE C, 0xEDE2
-			SET A, str_Nav13
-IFE [contact_type], 0x0208
-	IFE PEEK, 0x93EA
-		IFE C, 0x524B
-			SET A, str_Nav14
-IFE [contact_type], 0x0208
-	IFE PEEK, 0xE4BE
-		IFE C, 0xFE36
-			SET A, str_Nav15
-IFE [contact_type], 0x0208
-	IFE PEEK, 0x2B1C
-		IFE C, 0x6096
-			SET A, str_Nav16
+SET J, 0
+SET X, type_8_contacts
+:type_8_loop 
+IFE PEEK, [X]
+IFE C, [X+1]
+    SET PC, type_8_set
 
+ADD X, 24
+ADD J, 1
+IFL J, [num_type_8]
+SET PC, type_8_loop
 SET PC, exit_type
+
+:type_8_set
+ADD X, 2
+SET A, X 
+SET PC, exit_type
+
+
 
 :write_range
 SET PUSH, X
@@ -302,10 +249,7 @@ ADD [screen_cursor], 1
 SET X, POP
 SET PC, POP
 
-; Strings AND Constants
-; =======================
-:str_heading
-DAT "  Type:        ID:    Range: Ang", 0
+
                                      
 
 

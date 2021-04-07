@@ -74,43 +74,6 @@ ADD J, 0x0020
 IFN I, 4
 	SET PC, doors_loop
 
-; SET A, 0
-; SET I, 1
-; HWI [doors_hwid]
-; SHR B, 8
-; IFE B, 0
-; 	SET A, str_locked
-; IFE B, 1
-; 	SET A, str_oneway
-; IFE B, 2
-; 	SET A, str_auto
-; IFE B, 3
-; 	SET A, str_open
-; SET [screen_cursor], 0x00D0
-; SET Z, [fg_light_green]
-; IFE [ocursor], 4
-; 	SET Z, 0xA700 ; fg_light_green bg_light_grey
-; JSR write_string
-
-; SET A, 0
-; SET I, 2
-; HWI [doors_hwid]
-; SHR B, 8
-; IFE B, 0
-; 	SET A, str_locked
-; IFE B, 1
-; 	SET A, str_oneway
-; IFE B, 2
-; 	SET A, str_auto
-; IFE B, 3
-; 	SET A, str_open
-; SET [screen_cursor], 0x00F0
-; SET Z, [fg_light_green]
-; IFE [ocursor], 5
-; 	SET Z, 0xA700   ; fg_light_green bg_light_grey
-; JSR write_string
-
-
 
 SET I, POP
 SET PC, POP
@@ -118,7 +81,7 @@ SET PC, POP
 
 :ops_left
 IFE [ocursor], 0
-	JSR radio3_mode_func
+	JSR helm_mode_func
 IFE [ocursor], 1
 	JSR clamps_down
 IFE [ocursor], 2
@@ -130,7 +93,7 @@ SET PC, POP
 
 :ops_right
 IFE [ocursor], 0
-	JSR helm_mode_func
+	JSR radio1_mode_func
 IFE [ocursor], 1
 	JSR clamps_up	
 IFE [ocursor], 2
@@ -223,38 +186,3 @@ SET I, POP
 SET B, POP
 SET A, POP
 SET PC, POP
-
-
-
-
-; Strings AND Constants
-; =======================
-:str_leftclamp
-DAT "Left Clamp:   ", 0
-:str_rightclamp
-DAT "Right Clamp:  ", 0
-:str_cockpitdoor
-DAT "Cockpit Door: ", 0
-:str_leftdoor
-DAT "Left Door:    ", 0
-:str_rightdoor
-DAT "Right Door:   ", 0
-:str_reardoor
-DAT "Rear Door:    ", 0
-:str_locked
-DAT "Locked ", 0
-:str_pulling
-DAT "Pulling", 0
-:str_off
-DAT "Off    ", 0
-:str_auto
-DAT "Auto   ", 0
-:str_open
-DAT "Open   ", 0
-:str_oneway
-DAT "One-Way", 0
-
-
-
-
-

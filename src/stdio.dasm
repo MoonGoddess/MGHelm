@@ -16,6 +16,7 @@ DAT 0x0000
 ; returns nothing.
 
 :write_hex
+SET PUSH, A
 SET PUSH, B
 SET B, A
 SHR A, 0x0C
@@ -33,6 +34,7 @@ SHL A, 0x0C
 SHR A, 0x0C
 JSR to_string
 SET B, POP
+SET A, POP
 SET PC, POP
 ; =========
 ; End write_hex
@@ -249,6 +251,21 @@ SET PC, POP
 ; =========
 ; End newline
 
+; Mem_fill Fuction
+; Fills a series of memory locations with a single value
+; X for value, Y for Destination, Z for lenth
+
+:mem_fill
+SET I, 0
+:mem_fill_loop
+    IFE I, Z
+        SET PC, POP ; return
+    SET [Y], X
+    ADD Y, 1
+    ADD I, 1
+    SET PC, mem_fill_loop
+
+
 ; Mem_Copy Function 
 ; Copies a series of memory locations to another location in memory. 
 ; X for Origin, Y for Destination, Z for length 
@@ -268,11 +285,16 @@ SET PC, POP
 ; End mem_copy
 	
 :scroll
+	SET PUSH, J
+	SET PUSH, Z 
+	SET PUSH, I 
+	SET PUSH, X
+	SET PUSH, Y 
     SET J, 1
     SET Z, [termwidth]
     :scroll_loop
     IFE J, [termheight]
-        SET PC, POP ; return
+        SET PC, scroll_exit ; return
     SET I, J
     MUL I, [termwidth]
     SET X, [video_ram]
@@ -282,6 +304,14 @@ SET PC, POP
     JSR mem_copy
     ADD J, 1
     SET PC, scroll_loop
+
+	:scroll_exit
+	SET Y, POP
+	SET X, POP
+	SET I, POP
+	SET Z, POP
+	SET J, POP
+	SET PC, POP
 ; =========
 ; End scroll
 	

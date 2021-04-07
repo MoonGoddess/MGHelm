@@ -1,86 +1,89 @@
 ; Memory
 ; ==============================
 
-:keyboard_hwid
-DAT 0x0000
-:screen_hwid
-DAT 0x0000
-:fsensor_hwid
-DAT 0x000c
-:rsensor_hwid
-DAT 0x000e
-:clock_hwid
-DAT 0x0000
-:radio1_hwid
-DAT 0x000F
-:radio2_hwid
-DAT 0x0010
-:laser_hwid
-DAT 0x0000
-:harpoon_hwid
-DAT 0x0000
 :video_ram
 DAT 0x8000
-:clamps_hwid
-DAT 0x0000
-:doors_hwid
-DAT 0x0000
 :clocklo
 DAT 0x0000
 :clockhi
 DAT 0x0000
 
+:keyboard_hwid
+DAT 0xffff, 0x30cf, 0x7406 
+:screen_hwid
+DAT 0xffff, 0x7349, 0xf615
+:fsensor_hwid
+DAT 0x000c, 0x1f12, 0xe306
+:rsensor_hwid
+DAT 0x000e, 0x1f12, 0xe306
+:clock_hwid
+DAT 0xffff, 0x12d0, 0xb402
+:radio1_hwid
+DAT 0x000F, 0x74cf, 0xc5a3
+:radio2_hwid
+DAT 0x0010, 0x74cf, 0xc5a3
+:laser_hwid
+DAT 0xffff, 0xEA63, 0x5459
+:harpoon_hwid
+DAT 0xffff, 0x0320, 0x0f75
+:clamps_hwid
+DAT 0xffff, 0x7877, 0xa3df
+:doors_hwid
+DAT 0xffff, 0x3878, 0x90c7
+:bootrom_hwid
+DAT 0xffff, 0xec41, 0x8001
+:floppy_hwid
+DAT 0xffff, 0x4fd5, 0x24c5
 
 
-; Check and setup monitor/keyboard
+; Detect Hardware devices
 ; ==============================
-:check_hw
-SET [keyboard_hwid], 0xffff
-SET [screen_hwid], 0xffff
-SET [clock_hwid], 0xffff
-SET [video_ram], 0x8000
+:detect_hw
+
 
 HWN J
 SET I, 0
 :iterate_hw
 HWQ I
-IFE B, 0x30cf
-IFE A, 0x7406
+IFE B, [keyboard_hwid + 1]
+IFE A, [keyboard_hwid + 2]
 	SET [keyboard_hwid], I
-IFE B, 0x7349
-IFE A, 0xf615
+IFE B, [screen_hwid + 1]
+IFE A, [screen_hwid + 2]
 	SET [screen_hwid], I
-;IFE B, 0x1F12
-;IFE A, 0xE306
+;IFE B, [fsensor_hwid + 1]
+;IFE A, [fsensor_hwid + 2]
 ;	SET [fsensor_hwid], I
-IFE B, 0x12d0
-IFE A, 0xb402
+IFE B, [clock_hwid + 1]
+IFE A, [clock_hwid + 2]
 	SET [clock_hwid], I
-IFE B, 0x7877
-IFE A, 0xa3df
+IFE B, [clamps_hwid + 1]
+IFE A, [clamps_hwid + 2]
 	SET [clamps_hwid], I
-IFE B, 0x3878
-IFE A, 0x90c7
+IFE B, [doors_hwid + 1]
+IFE A, [doors_hwid + 2]
 	SET [doors_hwid], I
-IFE B, 0xEA63
-IFE A, 0x5459
+IFE B, [laser_hwid + 1]
+IFE A, [laser_hwid + 2]
 	SET [laser_hwid], I
-IFE B, 0x0320
-IFE A, 0x0f75
+IFE B, [harpoon_hwid + 1]
+IFE A, [harpoon_hwid + 2]
 	SET [harpoon_hwid], I
+IFE B, [bootrom_hwid + 1]
+IFE A, [bootrom_hwid + 2]
+	SET [bootrom_hwid], I
+IFE B, [floppy_hwid + 1]
+IFE A, [floppy_hwid + 2]
+	SET [floppy_hwid], I
 ADD I, 1
 IFL I, J
 	SET PC, iterate_hw
-	
+SET PC, POP
+
+:init_screen
+SET PUSH, B
 IFE [screen_hwid], 0xffff
 	SET PC, catch_fire
-IFN [keyboard_hwid], 0xffff
-	SET PC, setup_hw
-SET A, str_no_keyboard_message
-JSR write_string
-SET PC, catch_fire
-
-:setup_hw
 SET A, 0
 SET B, [video_ram]
 HWI [screen_hwid]
@@ -91,42 +94,82 @@ HWI [screen_hwid]
 SET A, 1
 SET B, font
 HWI [screen_hwid]
+SET B, POP
+SET PC, POP
 
+:init_keyboard
+IFN [keyboard_hwid], 0xffff
+	SET PC, setup_keyboard
+SET A, str_no_keyboard_message
+JSR write_string
+SET PC, catch_fire
+
+:setup_keyboard
+SET PUSH, B
 SET A, 3
 SET B, [keyboard_hwid]
 HWI [keyboard_hwid]
 SET A, 0
 HWI [keyboard_hwid]
+SET B, POP
+SET PC, POP
 
+:init_harpoon
+IFE [harpoon_hwid], 0xffff
+	SET PC, POP
+SET PUSH, B
 SET A, 2
 SET B, 0
 HWI [harpoon_hwid]
+SET B, POP
+SET PC, POP
 
+:init_radio1
+IFE [radio1_hwid], 0xffff
+	SET PC, POP
+SET PUSH, B
 SET B, [radio1_hwid]
 SET A, 0
 HWI [radio1_hwid]
+SET B, POP
+SET PC, POP
 
+:init_radio2
+IFE [radio2_hwid], 0xffff
+	SET PC, POP
+SET PUSH, B
 SET B, [radio2_hwid]
 SET A, 0
 HWI [radio2_hwid]
+SET B, POP
+SET PC, POP
 
+:init_clock
 IFE [clock_hwid], 0xffff
 	SET PC, POP
+SET PUSH, B
 SET B, 60           ; tick once per second
 SET A, 0
 HWI [clock_hwid]
 SET B, [clock_hwid]
 SET A, 2
 HWI [clock_hwid]
+SET B, POP
 SET PC, POP
 
-; Strings AND Constants
-; =======================
+:catch_fire
+DAT 0x0000
+SET PC, catch_fire
+
+
+; From drivers.dasm
 :str_no_thruster_message
 DAT "Hardware 0-7 expected to be     thrusters. Halting.", 0
 :str_no_keyboard_message
 DAT "No keyboard found. Halting.", 0
 
+;Font 
+;==============================
 
 :font
 dat 0x0000,0x0000, 0x080f,0x0808, 0x08f8,0x0808, 0x00ff,0x0808, 0x0808,0x0808, 0x08ff,0x0808, 0x000f,0x0808, 0x08f8,0x0000
