@@ -71,27 +71,20 @@ DAT 0x0000
 ; Check thrusters
 ; ==============================
 :init_thrusters
-HWN J
-IFL J, 8
-	SET PC, no_thrusters
-	
-SET I, 0
-:iterate_thruster_hw_loop
-IFE I, 8
-	SET PC, take_off
-HWQ I
-ADD I, 1
-IFE B, 0xa474
-IFE A, 0x8683
-	SET PC, iterate_thruster_hw_loop
+;IFE [thrusters_hwid], 0xffff
+;	SET PC, no_thrusters
+;SET PC, POP
 	
 :no_thrusters
-SET A, str_no_thruster_message
-SET Z, 0xF000
-JSR write_string
-SET PC, catch_fire
+;SET A, str_no_thruster_message
+;SET Z, 0xF000
+;JSR write_string
+;SET PC, catch_fire
 
 SET PC, POP
+
+
+
 
 ; Support routines
 ; ==============================

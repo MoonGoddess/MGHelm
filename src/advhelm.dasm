@@ -130,43 +130,51 @@ SET A, 0
 SET B, 0
 IFE [key_w_down], 1
 SET B, [throttle]
-HWI 0
-HWI 1
+SET I, 0
+HWI [thrusters_hwid]
+SET I, 1
+HWI [thrusters_hwid]
 ; 2
 ; 3
 SET B, 0
 IFE [key_s_down], 1
 SET B, [throttle]
-HWI 2
-HWI 3
+SET I, 2
+HWI [thrusters_hwid]
+SET I, 3
+HWI [thrusters_hwid]
 ; 4
 SET B, 0
 IFE [key_d_down], 1
 SET B, [throttle]
 IFE [key_e_down], 1
 SET B, [throttle]
-HWI 4
+SET I, 4
+HWI [thrusters_hwid]
 ; 5
 SET B, 0
 IFE [key_d_down], 1
 SET B, [throttle]
 IFE [key_q_down], 1
 SET B, [throttle]
-HWI 5
+SET I, 5
+HWI [thrusters_hwid]
 ; 6
 SET B, 0
 IFE [key_a_down], 1
 SET B, [throttle]
 IFE [key_q_down], 1
 SET B, [throttle]
-HWI 6
+SET I, 6
+HWI [thrusters_hwid]
 ; 7
 SET B, 0
 IFE [key_a_down], 1
 SET B, [throttle]
 IFE [key_e_down], 1
 SET B, [throttle]
-HWI 7
+SET I, 7
+HWI [thrusters_hwid]
 
 ; harpoon0
 IFE [key_1_down], 1
