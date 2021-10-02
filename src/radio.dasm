@@ -508,7 +508,7 @@ SET PC, POP
 :radio_right
 IFE [mode], 5
 	IFE [rcursor3], 0
-		JSR scanner_mode_func
+		JSR dev_mode_func
 IFE [mode], 4
 	IFE [rcursor2], 0
 		JSR radio3_mode_func

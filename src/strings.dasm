@@ -56,9 +56,9 @@ DAT 32
 ; Strings
 ; =======================
 :str_title
-DAT "MGa11    ", 0
+DAT "MGa13    ", 0
 :str_intro1
-DAT "         MG Helm  alpha11        ", 0
+DAT "         MG Helm  alpha13        ", 0
 
 ;from advhelm.dasm
 :str_throttle
@@ -140,6 +140,10 @@ DAT "Asteroid (H2 and O2) ", 0
 DAT "Asteroid (H2 and O2) ", 0
 :str_type901
 DAT "Asteroid (H2 and O2) ", 0
+:str_type111
+DAT "Impassable Ast Fld   ", 0
+:str_type411
+DAT "Planet Surface       ", 0
 
 
 
@@ -195,3 +199,20 @@ DAT "d ago.", 0
 ; from sensors.dasm
 :str_heading
 DAT "  Type:               Range: Ang", 0
+
+:str_a
+DAT " A: ", 0
+:str_b
+DAT " B: ", 0
+:str_c
+DAT " C: ", 0
+:str_x
+DAT " X: ", 0
+:str_y
+DAT " Y: ", 0
+:str_z
+DAT " Z: ", 0
+:str_i
+DAT " I: ", 0
+:str_j
+DAT " J: ", 0
