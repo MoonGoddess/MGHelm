@@ -23,11 +23,10 @@ DAT 0x0000
 ; Initilize Hardware
 
 :start
-; Assumes LEM1802, generic keyboard, generic clock,
 JSR detect_hw   
-JSR init_screen
-JSR init_keyboard
-JSR init_clock
+JSR init_screen   ; Assumes LEM1802
+JSR init_keyboard ; Assumes generic keyboard
+JSR init_clock		; Assumes generic clock
 JSR intro_screen
 ; Assumes 2 standard sensor 2000m range 120 arc,  Sensors currently hardcoded as there's no way to tell facing.
 JSR init_radio1
@@ -102,21 +101,21 @@ IFE [radio_repeating2], 1
 	JSR radio2_repeat 
 
 
-IFE [keys_changed], 0
+;IFE [keys_changed], 0
 	SET PC, wait_for_key_loop
 
 
 
-SET [keys_changed], 0
-SET I, 0
-SET A, 2
-:key_update_loop
-SET B, [I + keys]
-HWI [keyboard_hwid]
-SET [I + keys_down], C
-ADD I, 1
-IFL I, [num_keys]
-	SET PC, key_update_loop
+;SET [keys_changed], 0
+;SET I, 0
+;SET A, 2
+;:key_update_loop
+;SET B, [I + keys]
+;HWI [keyboard_hwid]
+;SET [I + keys_down], C
+;ADD I, 1
+;IFL I, [num_keys]
+;	SET PC, key_update_loop
 
 ; 0: W
 ; 1: W
@@ -127,77 +126,77 @@ IFL I, [num_keys]
 ; 6: A | Q
 ; 7: A | E
 
-SET A, 0
+;SET A, 0
 ; 0
 ; 1
-SET B, 0
-IFE [key_w_down], 1
-SET B, [throttle]
-SET I, 0
-HWI [thrusters_hwid]
-SET I, 1
-HWI [thrusters_hwid]
+;SET B, 0
+;IFE [key_w_down], 1
+;SET B, [throttle]
+;SET I, 0
+;HWI [thrusters_hwid]
+;SET I, 1
+;HWI [thrusters_hwid]
 ; 2
 ; 3
-SET B, 0
-IFE [key_s_down], 1
-SET B, [throttle]
-SET I, 2
-HWI [thrusters_hwid]
-SET I, 3
-HWI [thrusters_hwid]
+;SET B, 0
+;IFE [key_s_down], 1
+;SET B, [throttle]
+;SET I, 2
+;HWI [thrusters_hwid]
+;SET I, 3
+;HWI [thrusters_hwid]
 ; 4
-SET B, 0
-IFE [key_d_down], 1
-SET B, [throttle]
-IFE [key_e_down], 1
-SET B, [throttle]
-SET I, 4
-HWI [thrusters_hwid]
+;SET B, 0
+;IFE [key_d_down], 1
+;SET B, [throttle]
+;IFE [key_e_down], 1
+;SET B, [throttle]
+;SET I, 4
+;HWI [thrusters_hwid]
 ; 5
-SET B, 0
-IFE [key_d_down], 1
-SET B, [throttle]
-IFE [key_q_down], 1
-SET B, [throttle]
-SET I, 5
-HWI [thrusters_hwid]
+;SET B, 0
+;IFE [key_d_down], 1
+;SET B, [throttle]
+;IFE [key_q_down], 1
+;SET B, [throttle]
+;SET I, 5
+;HWI [thrusters_hwid]
 ; 6
-SET B, 0
-IFE [key_a_down], 1
-SET B, [throttle]
-IFE [key_q_down], 1
-SET B, [throttle]
-SET I, 6
-HWI [thrusters_hwid]
+;SET B, 0
+;IFE [key_a_down], 1
+;SET B, [throttle]
+;IFE [key_q_down], 1
+;SET B, [throttle]
+;SET I, 6
+;HWI [thrusters_hwid]
 ; 7
-SET B, 0
-IFE [key_a_down], 1
-SET B, [throttle]
-IFE [key_e_down], 1
-SET B, [throttle]
-SET I, 7
-HWI [thrusters_hwid]
+;SET B, 0
+;IFE [key_a_down], 1
+;SET B, [throttle]
+;IFE [key_e_down], 1
+;SET B, [throttle]
+;SET I, 7
+;HWI [thrusters_hwid]
 
 ; harpoon0
-IFE [key_1_down], 1
-	JSR fireHarpoon0
-SET [key_1_down], 0
+;IFE [key_1_down], 1
+;	JSR fireHarpoon0
+;SET [key_1_down], 0
 ; harpoon1
-IFE [key_2_down], 1
-	JSR fireHarpoon1
-SET [key_2_down], 0
+;IFE [key_2_down], 1
+;	JSR fireHarpoon1
+;SET [key_2_down], 0
 
-IFE [key_t_down], 1
-	JSR throttle_up
-IFE [key_g_down], 1
-	JSR throttle_down
+;IFE [key_t_down], 1
+;	JSR throttle_up
+;IFE [key_g_down], 1
+;	JSR throttle_down
 
-IFE [key_enter_down], 1
-	JSR pressed_enter
+;IFE [key_enter_down], 1
+;	JSR pressed_enter
 
-IFE [key_f_down], 1
-	JSR fire_laser
+;IFE [key_f_down], 1
+;	JSR fire_laser
 
 
 
@@ -208,11 +207,11 @@ IFE [key_f_down], 1
 ;	IFE [key_z_down], 1
 ;		ADD [scanner_zoom], 1
 
-IFE [mode], 2
-	JSR ops_control
+;IFE [mode], 2
+;	JSR ops_control
 
-IFG [mode], 2
-	JSR radio_control
+;IFG [mode], 2
+;	JSR radio_control
 
 
 ;IFE [key_left_down], 1
@@ -221,26 +220,26 @@ IFG [mode], 2
 ;IFE [key_right_down], 1
 ;	IFE [mode], 0
 ;		JSR scan_exit_helm
-IFE [key_left_down], 1
-	IFE [mode], 0
-		JSR radio3_mode_func
+;IFE [key_left_down], 1
+;	IFE [mode], 0
+;		JSR radio3_mode_func
 
-IFE [key_left_down], 1
-	IFE [mode], 1
-		JSR dev_mode_func
+;IFE [key_left_down], 1
+;	IFE [mode], 1
+;		JSR dev_mode_func
 
-IFE [key_right_down], 1
-	IFE [mode], 1
-		JSR ops_mode_func
-
-
-IFE [key_right_down], 1
-	IFE [mode], 0
-		JSR helm_mode_func
+;IFE [key_right_down], 1
+;	IFE [mode], 1
+;		JSR ops_mode_func
 
 
+;IFE [key_right_down], 1
+;	IFE [mode], 0
+;		JSR helm_mode_func
 
-SET PC, wait_for_key_loop
+
+
+;SET PC, wait_for_key_loop
 
 
 
@@ -262,17 +261,15 @@ IFE A, [clock_hwid]
 RFI 0
 
 :clock_IRQ_handler
-IFE [clocklo], 0xFFFF
-	SET [clocklo], 0
 ADD [clocklo], 1
-IFE [clocklo], 0xffff
+IFE [clocklo], 0xFFFF
 	ADD [clockhi], 1
 IFE [clocklo], 0xFFFF
 	SET [clocklo], 0
 SET PC, POP
 
 :keyboard_irq_handler
-SET [keys_changed], 1
+JSR input_handler
 SET PC, POP
 
 ; Functions
