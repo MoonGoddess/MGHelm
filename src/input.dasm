@@ -96,12 +96,12 @@ IFE [key_f_down], 1
 
 
 
-;IFE [mode], 0
-;	IFE [key_x_down], 1
-;		SUB [scanner_zoom], 1
-;IFE [mode], 0
-;	IFE [key_z_down], 1
-;		ADD [scanner_zoom], 1
+IFE [mode], 0
+	IFE [key_x_down], 1
+		SUB [scanner_zoom], 1
+IFE [mode], 0
+	IFE [key_z_down], 1
+		ADD [scanner_zoom], 1
 
 IFE [mode], 2
 	JSR ops_control
@@ -110,18 +110,18 @@ IFG [mode], 2
 	JSR radio_control
 
 
-;IFE [key_left_down], 1
-;	IFE [mode], 0
-;		JSR scan_exit_radio
-;IFE [key_right_down], 1
-;	IFE [mode], 0
-;		JSR scan_exit_helm
+IFE [key_left_down], 1
+	IFE [mode], 0
+		JSR scan_exit_radio
+IFE [key_right_down], 1
+	IFE [mode], 0
+		JSR scan_exit_helm
 IFE [key_left_down], 1
 	IFE [mode], 0
 		JSR radio3_mode_func
 
 IFE [key_left_down], 1
-	IFE [mode], 1
+	IFE [mode], 
 		JSR dev_mode_func
 
 IFE [key_right_down], 1
