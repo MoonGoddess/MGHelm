@@ -764,6 +764,7 @@ DAT 0x0000
 
 
 .include 'MGhelm\src\drivers.dasm'    ; Hardware support
+.include 'MGhelm\src\input.dasm'	  ; Keyboard handling.
 .include 'MGhelm\src\thrusters.dasm'  ; Thrusters and Lasers
 .include 'MGhelm\src\stdio.dasm'      ; Functions for writing to screen
 .include 'MGhelm\src\sensors.dasm'    ; support functions for Sensor display
