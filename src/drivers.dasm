@@ -146,6 +146,16 @@ SET PUSH, B
 SET B, [radio2_hwid]
 SET A, 0
 HWI [radio2_hwid]
+SET PUSH, X
+SET PUSH, Y 
+SET PUSH, Z 
+SET X, 0
+SET Y, [0x6000]
+SET Z, 0x0B00
+JSR mem_fill
+SET Z, POP
+SET Y, POP
+SET X, POP
 SET B, POP
 SET PC, POP
 
