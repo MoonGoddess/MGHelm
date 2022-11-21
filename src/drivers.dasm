@@ -149,7 +149,7 @@ HWI [radio2_hwid]
 SET PUSH, X
 SET PUSH, Y 
 SET PUSH, Z 
-SET X, 0
+SET X, 0			; clear memory where recieved radio messages will be stored.
 SET Y, [0x6000]
 SET Z, 0x0B00
 JSR mem_fill
