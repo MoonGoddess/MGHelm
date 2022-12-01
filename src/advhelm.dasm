@@ -3,7 +3,7 @@ SET PC, start
 :major_version
 DAT 0x0000
 :minor_version
-DAT 0x0000
+DAT 0x000d
 
 
 
@@ -23,13 +23,12 @@ DAT 0x0000
 ; Initilize Hardware
 
 :start
-; Assumes LEM1802, generic keyboard, generic clock,
 JSR detect_hw   
-JSR init_screen
-JSR init_keyboard
-JSR init_clock
+JSR init_screen   ; Assumes LEM1802
+JSR init_keyboard ; Assumes generic keyboard
+JSR init_clock		; Assumes generic clock
 JSR intro_screen
-; Assumes 2 standard sensor 2000m range 120 arc,  Sensors currently hardcoded as there's no way to tell facing.
+; Assumes 2 standard sensors 2000m range 120 arc,  Sensors currently hardcoded as there's no way to tell facing.
 JSR init_radio1
 JSR init_radio2
 ; Assumes 2 harpoons and 4 doors
@@ -42,7 +41,7 @@ JSR init_thrusters
 :take_off
 SET [keys_changed], 0
 IAS irq_handler
-; Set up radios
+; Set up radios, sets up Radio 1 to listen to station freqency, sets up Radio 2 for broadcast on 0000,0000
 SET A, 1
 SET B, [type_3_contacts]
 SET C, [type_3_contacts+1]
@@ -55,17 +54,17 @@ SET X, str_sending_message
 SET Y, [sending_message]
 SET Z, 14
 JSR mem_copy
-;Shade Radar Background
-SET X, [bg_color]
-SET Y, 0x8400
-SET Z, 0x0200
-JSR mem_fill
+;Shade Radar Background    ; radar currently disabled 
+;SET X, [bg_color]
+;SET Y, 0x8400
+;SET Z, 0x0200
+;JSR mem_fill
 :wait_for_key_loop1
-IFE [keys_changed], 0
+IFE [keys_changed], 0    ;  Waits for key to be pressed,  to clear Intro Screen 
 	SET PC, wait_for_key_loop1
 
 SET [keys_changed], 1
-JSR helm_mode_func
+JSR helm_mode_func       ; Sets up  program to start in helm mode, mode 0
 
 ; Main loop
 ; ==============================
@@ -75,45 +74,48 @@ JSR helm_mode_func
 :wait_for_key_loop
 SET [screen_cursor], 27
 SET J, 3
-IFE [mode], 1
+IFE [mode], 1                     ; If in helm mode, write current throttle in upper corner
 	JSR write_throttle
 SET [screen_cursor], 0x0060
-IFE [mode], 1
+IFE [mode], 1                     ; if in helm mode, update the current sensor contacts in human readable format
 	IFN [fsensor_hwid], 0xffff
 		JSR display_sensors
-IFE [mode], 0
-	JSR scanner_draw
+;IFE [mode], 0                   
+	;JSR scanner_draw
+	
 
 
-IFE [mode], 2
+IFE [mode], 2					; if in Ops mode, display ops settings. up do date.
 	JSR display_ops
-IFE [mode], 3
+IFE [mode], 3					; If in radio1 display data for radio 1.
 	JSR display_radio1
-IFE [mode], 4
+IFE [mode], 4					; If in radio2 display data for radio 2
 	JSR display_radio2
-IFE [mode], 5
+IFE [mode], 5					; if in radio 3 displays 
 	JSR display_radio3
+IFE [mode], 0					; displays sensor contacts in hex for testing
+	JSR display_dev
 IFE [radio_repeating1], 1
 	JSR radio1_repeat 
 IFE [radio_repeating2], 1
 	JSR radio2_repeat 
 
 
-IFE [keys_changed], 0
-	SET PC, wait_for_key_loop
+;IFE [keys_changed], 0
+SET PC, wait_for_key_loop
 
 
 
-SET [keys_changed], 0
-SET I, 0
-SET A, 2
-:key_update_loop
-SET B, [I + keys]
-HWI [keyboard_hwid]
-SET [I + keys_down], C
-ADD I, 1
-IFL I, [num_keys]
-	SET PC, key_update_loop
+;SET [keys_changed], 0
+;SET I, 0
+;SET A, 2
+;:key_update_loop
+;SET B, [I + keys]
+;HWI [keyboard_hwid]
+;SET [I + keys_down], C
+;ADD I, 1
+;IFL I, [num_keys]
+;	SET PC, key_update_loop
 
 ; 0: W
 ; 1: W
@@ -124,104 +126,120 @@ IFL I, [num_keys]
 ; 6: A | Q
 ; 7: A | E
 
-SET A, 0
+;SET A, 0
 ; 0
 ; 1
-SET B, 0
-IFE [key_w_down], 1
-SET B, [throttle]
-HWI 0
-HWI 1
+;SET B, 0
+;IFE [key_w_down], 1
+;SET B, [throttle]
+;SET I, 0
+;HWI [thrusters_hwid]
+;SET I, 1
+;HWI [thrusters_hwid]
 ; 2
 ; 3
-SET B, 0
-IFE [key_s_down], 1
-SET B, [throttle]
-HWI 2
-HWI 3
+;SET B, 0
+;IFE [key_s_down], 1
+;SET B, [throttle]
+;SET I, 2
+;HWI [thrusters_hwid]
+;SET I, 3
+;HWI [thrusters_hwid]
 ; 4
-SET B, 0
-IFE [key_d_down], 1
-SET B, [throttle]
-IFE [key_e_down], 1
-SET B, [throttle]
-HWI 4
+;SET B, 0
+;IFE [key_d_down], 1
+;SET B, [throttle]
+;IFE [key_e_down], 1
+;SET B, [throttle]
+;SET I, 4
+;HWI [thrusters_hwid]
 ; 5
-SET B, 0
-IFE [key_d_down], 1
-SET B, [throttle]
-IFE [key_q_down], 1
-SET B, [throttle]
-HWI 5
+;SET B, 0
+;IFE [key_d_down], 1
+;SET B, [throttle]
+;IFE [key_q_down], 1
+;SET B, [throttle]
+;SET I, 5
+;HWI [thrusters_hwid]
 ; 6
-SET B, 0
-IFE [key_a_down], 1
-SET B, [throttle]
-IFE [key_q_down], 1
-SET B, [throttle]
-HWI 6
+;SET B, 0
+;IFE [key_a_down], 1
+;SET B, [throttle]
+;IFE [key_q_down], 1
+;SET B, [throttle]
+;SET I, 6
+;HWI [thrusters_hwid]
 ; 7
-SET B, 0
-IFE [key_a_down], 1
-SET B, [throttle]
-IFE [key_e_down], 1
-SET B, [throttle]
-HWI 7
+;SET B, 0
+;IFE [key_a_down], 1
+;SET B, [throttle]
+;IFE [key_e_down], 1
+;SET B, [throttle]
+;SET I, 7
+;HWI [thrusters_hwid]
 
 ; harpoon0
-IFE [key_1_down], 1
-	JSR fireHarpoon0
-SET [key_1_down], 0
+;IFE [key_1_down], 1
+;	JSR fireHarpoon0
+;SET [key_1_down], 0
 ; harpoon1
-IFE [key_2_down], 1
-	JSR fireHarpoon1
-SET [key_2_down], 0
+;IFE [key_2_down], 1
+;	JSR fireHarpoon1
+;SET [key_2_down], 0
 
-IFE [key_t_down], 1
-	JSR throttle_up
-IFE [key_g_down], 1
-	JSR throttle_down
+;IFE [key_t_down], 1
+;	JSR throttle_up
+;IFE [key_g_down], 1
+;	JSR throttle_down
 
-IFE [key_enter_down], 1
-	JSR pressed_enter
+;IFE [key_enter_down], 1
+;	JSR pressed_enter
 
-IFE [key_f_down], 1
-	JSR fire_laser
-
-
-
-IFE [mode], 0
-	IFE [key_x_down], 1
-		SUB [scanner_zoom], 1
-IFE [mode], 0
-	IFE [key_z_down], 1
-		ADD [scanner_zoom], 1
-
-IFE [mode], 2
-	JSR ops_control
-
-IFG [mode], 2
-	JSR radio_control
-
-
-IFE [key_left_down], 1
-	IFE [mode], 0
-		JSR scan_exit_radio
-IFE [key_right_down], 1
-	IFE [mode], 0
-		JSR scan_exit_helm
-
-IFE [key_left_down], 1
-	IFE [mode], 1
-		JSR scanner_mode_func
-
-IFE [key_right_down], 1
-	IFE [mode], 1
-		JSR ops_mode_func
+;IFE [key_f_down], 1
+;	JSR fire_laser
 
 
 
-SET PC, wait_for_key_loop
+;IFE [mode], 0
+;	IFE [key_x_down], 1
+;		SUB [scanner_zoom], 1
+;IFE [mode], 0
+;	IFE [key_z_down], 1
+;		ADD [scanner_zoom], 1
+
+;IFE [mode], 2
+;	JSR ops_control
+
+;IFG [mode], 2
+;	JSR radio_control
+
+
+;IFE [key_left_down], 1
+;	IFE [mode], 0
+;		JSR scan_exit_radio
+;IFE [key_right_down], 1
+;	IFE [mode], 0
+;		JSR scan_exit_helm
+;IFE [key_left_down], 1
+;	IFE [mode], 0
+;		JSR radio3_mode_func
+
+;IFE [key_left_down], 1
+;	IFE [mode], 1
+;		JSR dev_mode_func
+
+;IFE [key_right_down], 1
+;	IFE [mode], 1
+;		JSR ops_mode_func
+
+
+;IFE [key_right_down], 1
+;	IFE [mode], 0
+;		JSR helm_mode_func
+
+
+
+;SET PC, wait_for_key_loop
 
 
 
@@ -232,7 +250,7 @@ SET PC, wait_for_key_loop
 :irq_handler
 IAQ 1
 IFE A, [keyboard_hwid]
-	JSR keyboard_irq_handler
+	JSR input_handler
 IFE A, [radio1_hwid]
 	JSR check_radio1
 IFE A, [radio2_hwid]
@@ -243,18 +261,14 @@ IFE A, [clock_hwid]
 RFI 0
 
 :clock_IRQ_handler
-IFE [clocklo], 0xFFFF
-	SET [clocklo], 0
 ADD [clocklo], 1
-IFE [clocklo], 0xffff
+IFE [clocklo], 0xFFFF
 	ADD [clockhi], 1
 IFE [clocklo], 0xFFFF
 	SET [clocklo], 0
 SET PC, POP
 
-:keyboard_irq_handler
-SET [keys_changed], 1
-SET PC, POP
+
 
 ; Functions
 ; ==============================
@@ -327,6 +341,30 @@ SET A, 0
 SET B, [video_ram]
 HWI [screen_hwid]
 JSR radio3_mode_func
+SET PC, POP
+
+:dev_mode_func
+SET PUSH, Z
+SET PUSH, Y
+SET PUSH, X
+SET PUSH, J
+SET PUSH, I
+SET PUSH, C
+SET PUSH, B
+SET PUSH, A
+SET [mode], F
+JSR clear_screen
+JSR display_dev
+SET [key_left_down], 0
+SET [key_right_down], 0
+SET A, POP
+SET B, POP
+SET C, POP
+SET I, POP
+SET J, POP
+SET X, POP
+SET Y, POP
+SET Z, POP
 SET PC, POP
 
 :helm_mode_func
@@ -726,6 +764,7 @@ DAT 0x0000
 
 
 .include 'MGhelm\src\drivers.dasm'    ; Hardware support
+.include 'MGhelm\src\input.dasm'	  ; Keyboard handling.
 .include 'MGhelm\src\thrusters.dasm'  ; Thrusters and Lasers
 .include 'MGhelm\src\stdio.dasm'      ; Functions for writing to screen
 .include 'MGhelm\src\sensors.dasm'    ; support functions for Sensor display

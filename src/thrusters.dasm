@@ -4,94 +4,26 @@
 DAT 0x00FF
 
 
-:num_keys
-DAT 18
 
-:keys
-DAT 'w'
-DAT 'a'
-DAT 's'
-DAT 'd'
-DAT 'q'
-DAT 'e'
-DAT '1'
-DAT '2'
-DAT 'f'
-DAT 't'
-DAT 'g'
-DAT 'z'
-DAT 'x'
-DAT 0x0080 ; Arrow up
-DAT	0x0081 ; Arrow down
-DAT	0x0082 ; Arrow left
-DAT	0x0083 ; Arrow right
-DAT 0x0011 ; Return Key
-
-:keys_changed
-DAT 0x0000
-:keys_down
-:key_w_down
-DAT 0x0000
-:key_a_down
-DAT 0x0000
-:key_s_down
-DAT 0x0000
-:key_d_down
-DAT 0x0000
-:key_q_down
-DAT 0x0000
-:key_e_down
-DAT 0x0000
-:key_1_down
-DAT 0x0000
-:key_2_down
-DAT 0x0000
-:key_f_down
-DAT 0x0000
-:key_t_down
-DAT 0x0000
-:key_g_down
-DAT 0x0000
-:key_x_down
-DAT 0x0000
-:key_z_down
-DAT 0x0000
-:key_up_down
-DAT 0x0000
-:key_down_down
-DAT 0x0000
-:key_left_down
-DAT 0x0000
-:key_right_down
-DAT 0x0000
-:key_enter_down
-DAT 0x0000
 
 
 ; Check thrusters
 ; ==============================
 :init_thrusters
-HWN J
-IFL J, 8
-	SET PC, no_thrusters
-	
-SET I, 0
-:iterate_thruster_hw_loop
-IFE I, 8
-	SET PC, take_off
-HWQ I
-ADD I, 1
-IFE B, 0xa474
-IFE A, 0x8683
-	SET PC, iterate_thruster_hw_loop
+;IFE [thrusters_hwid], 0xffff
+;	SET PC, no_thrusters
+;SET PC, POP
 	
 :no_thrusters
-SET A, str_no_thruster_message
-SET Z, 0xF000
-JSR write_string
-SET PC, catch_fire
+;SET A, str_no_thruster_message
+;SET Z, 0xF000
+;JSR write_string
+;SET PC, catch_fire
 
 SET PC, POP
+
+
+
 
 ; Support routines
 ; ==============================

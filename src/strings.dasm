@@ -9,11 +9,12 @@ DAT 0xACF7, 0x0045, "Main Station Core    ", 0
 DAT 0x2C02, 0x73EF, "Moon_Goddess's Ship  ", 0
 DAT 0x91E2, 0x04C1, "TomTom's Ship        ", 0
 DAT 0xD2A4, 0xD490, "Brick_btv's Ship     ", 0
-DAT 0x2E1C, 0x31D6, "ika's Ship           ", 0
-DAT 0x6499, 0x14A2, "zaz's ship           ", 0
+DAT 0x2E1C, 0x31D6, "'s Ship              ", 0
+DAT 0x6499, 0x14A2, "'s ship              ", 0
 DAT 0x6FC3, 0xFEED, "Relic Ship           ", 0
+DAT 0x5C3E, 0x6E40, "'s Ship              ", 0
 :num_type_3
-DAT 7
+DAT 8
 
 
 :type_8_contacts
@@ -55,9 +56,9 @@ DAT 32
 ; Strings
 ; =======================
 :str_title
-DAT "MGa11    ", 0
+DAT "MGa0E    ", 0
 :str_intro1
-DAT "         MG Helm  alpha11        ", 0
+DAT "         MG Helm  alpha0E        ", 0
 
 ;from advhelm.dasm
 :str_throttle
@@ -139,6 +140,10 @@ DAT "Asteroid (H2 and O2) ", 0
 DAT "Asteroid (H2 and O2) ", 0
 :str_type901
 DAT "Asteroid (H2 and O2) ", 0
+:str_type111
+DAT "Impassable Ast Fld   ", 0
+:str_type411
+DAT "Planet Surface       ", 0
 
 
 
@@ -194,3 +199,20 @@ DAT "d ago.", 0
 ; from sensors.dasm
 :str_heading
 DAT "  Type:               Range: Ang", 0
+
+:str_a
+DAT " A: ", 0
+:str_b
+DAT " B: ", 0
+:str_c
+DAT " C: ", 0
+:str_x
+DAT " X: ", 0
+:str_y
+DAT " Y: ", 0
+:str_z
+DAT " Z: ", 0
+:str_i
+DAT " I: ", 0
+:str_j
+DAT " J: ", 0

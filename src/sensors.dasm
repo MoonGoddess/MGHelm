@@ -8,6 +8,15 @@ DAT 0x0000
 :rear_contact
 DAT 0x0000
 
+:hardware_a DAT 0x0000
+:hardware_b DAT 0x0000
+:hardware_c DAT 0x0000
+:hardware_x DAT 0x0000
+:hardware_y DAT 0x0000
+:hardware_z DAT 0x0000
+:hardware_i DAT 0x0000
+:hardware_j DAT 0x0000
+
 
 ; Functions
 ; ====================
@@ -127,6 +136,8 @@ IFE B, 0x0010
 	SET A, str_warpgate
 IFE B, 0x000A
 	SET A, str_typeA
+IFE B, 0x0011
+	SET PC, type_11
 :exit_type
 IFE A, 0xffff
 	SET A, str_unknown
@@ -217,6 +228,14 @@ ADD X, 2
 SET A, X 
 SET PC, exit_type
 
+:type_11
+IFE [contact_type], 0x0111
+	SET A, str_type111
+IFE [contact_type], 0x0411
+	SET A, str_type411
+
+SET PC, exit_type
+
 
 
 :write_range
@@ -250,6 +269,95 @@ SET X, POP
 SET PC, POP
 
 
+:display_dev
+
+SET [screen_cursor], 0
+
+SET A, 0 
+SET B, 0
+SET C, 0
+SET X, 0
+SET Y, 0
+SET Z, 0
+SET I, 0
+SET J, 0
+HWI [fsensor_hwid]
+SET A, 1
+HWI [fsensor_hwid]
+JSR display_registers
+SET A, 1
+HWI [fsensor_hwid]
+JSR display_registers
+SET A, 1
+HWI [fsensor_hwid]
+JSR display_registers
+SET A, 1
+HWI [fsensor_hwid]
+JSR display_registers
+SET A, 1
+HWI [fsensor_hwid]
+JSR display_registers
+SET A, 1
+HWI [fsensor_hwid]
+JSR display_registers
+SET A, 1
+HWI [fsensor_hwid]
+JSR display_registers
+
+SET [screen_cursor], 0
+
+SET PC, POP
+
+:display_registers
+SET [hardware_a], A
+SET [hardware_b], B
+SET [hardware_c], C
+SET [hardware_x], X
+SET [hardware_y], Y
+SET [hardware_z], Z
+SET [hardware_i], I
+SET [hardware_j], J
+SET A, str_a
+SET Z, 0x7000
+JSR write_string
+SET A, [hardware_a]
+JSR write_hex
+SET A, str_b
+SET Z, 0x7000
+JSR write_string
+SET A, [hardware_b]
+JSR write_hex
+SET A, str_c
+SET Z, 0x7000
+JSR write_string
+SET A, [hardware_c]
+JSR write_hex
+SET A, str_x
+SET Z, 0x7000
+JSR write_string
+SET A, [hardware_x]
+JSR write_hex
+SET A, str_y
+SET Z, 0x7000
+JSR write_string
+SET A, [hardware_y]
+JSR write_hex
+SET A, str_z
+SET Z, 0x7000
+JSR write_string
+SET A, [hardware_z]
+JSR write_hex
+SET A, str_i
+SET Z, 0x7000
+JSR write_string
+SET A, [hardware_i]
+JSR write_hex
+SET A, str_j
+SET Z, 0x7000
+JSR write_string
+SET A, [hardware_j]
+JSR write_hex
+SET PC, POP
                                      
 
 

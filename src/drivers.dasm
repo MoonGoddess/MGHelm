@@ -13,15 +13,15 @@ DAT 0xffff, 0x30cf, 0x7406
 :screen_hwid
 DAT 0xffff, 0x7349, 0xf615
 :fsensor_hwid
-DAT 0x000c, 0x1f12, 0xe306
+DAT 0x0005, 0x1f12, 0xe306
 :rsensor_hwid
-DAT 0x000e, 0x1f12, 0xe306
+DAT 0x0007, 0x1f12, 0xe306
 :clock_hwid
 DAT 0xffff, 0x12d0, 0xb402
 :radio1_hwid
-DAT 0x000F, 0x74cf, 0xc5a3
+DAT 0x0008, 0x74cf, 0xc5a3
 :radio2_hwid
-DAT 0x0010, 0x74cf, 0xc5a3
+DAT 0x0009, 0x74cf, 0xc5a3
 :laser_hwid
 DAT 0xffff, 0xEA63, 0x5459
 :harpoon_hwid
@@ -34,6 +34,8 @@ DAT 0xffff, 0x3878, 0x90c7
 DAT 0xffff, 0xec41, 0x8001
 :floppy_hwid
 DAT 0xffff, 0x4fd5, 0x24c5
+:thrusters_hwid
+DAT 0xffff, 0x6a8d, 0x146a
 
 
 ; Detect Hardware devices
@@ -75,6 +77,9 @@ IFE A, [bootrom_hwid + 2]
 IFE B, [floppy_hwid + 1]
 IFE A, [floppy_hwid + 2]
 	SET [floppy_hwid], I
+IFE B, [thrusters_hwid + 1]
+IFE A, [thrusters_hwid + 2]
+	SET [thrusters_hwid], I
 ADD I, 1
 IFL I, J
 	SET PC, iterate_hw
@@ -141,6 +146,16 @@ SET PUSH, B
 SET B, [radio2_hwid]
 SET A, 0
 HWI [radio2_hwid]
+SET PUSH, X
+SET PUSH, Y 
+SET PUSH, Z 
+SET X, 0			; clear memory where recieved radio messages will be stored.
+SET Y, [0x6000]
+SET Z, 0x0B00
+JSR mem_fill
+SET Z, POP
+SET Y, POP
+SET X, POP
 SET B, POP
 SET PC, POP
 
@@ -163,8 +178,8 @@ SET PC, catch_fire
 
 
 ; From drivers.dasm
-:str_no_thruster_message
-DAT "Hardware 0-7 expected to be     thrusters. Halting.", 0
+:str_no_thuster_message
+DAT "No engines found. Halting.", 0
 :str_no_keyboard_message
 DAT "No keyboard found. Halting.", 0
 
