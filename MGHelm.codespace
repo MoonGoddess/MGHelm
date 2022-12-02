@@ -1,0 +1,18 @@
+{
+    "files": [
+        "src\\advhelm.dasm",
+        "src\\thrusters.dasm",
+        "src\\drivers.dasm",
+        "src\\gscanner.dasm",
+        "src\\math.dasm",
+        "src\\nav.dasm",
+        "src\\ops.dasm",
+        "src\\radio.dasm",
+        "src\\sensors.dasm",
+        "src\\stdio.dasm",
+        "src\\strings.dasm",
+        "src\\drawing.dasm"
+    ],
+    "properties": {},
+    "main_file": "src\\advhelm.dasm"
+}

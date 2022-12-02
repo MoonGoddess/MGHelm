@@ -1,0 +1,244 @@
+
+; normalize distance to 0..43 pixels
+; 43 is showing on the edge of radar.
+; 0x05F4 = 0xffff / 43 pixels
+:distance_normalize_const
+	DAT 0x05f4
+
+; normalize angle to 0..720 (180*4 precision)
+; 0x0000..0x8000 = 180 graduses
+; 0x2e = 0x8000 / (180 * 4)
+:angle_normalize_const
+	DAT 0x2e
+
+; zoom value [1..inf)
+:scanner_zoom
+	DAT 0x1
+
+
+
+; temporary variable points to
+; lo-bits of sensor object.
+; used for object icons drawing
+:current_object
+	DAT 0x0
+
+:radar_radius
+	DAT 42
+
+:scanner_setup
+	SET [fsensor_hwid], A
+	JSR canvas_setup
+	SET PC, POP
+
+:scanner_draw
+	JSR clear_back_buffer
+
+	; drawing a half of circle.
+	; NOTE: all the angles in this code
+	; are MULTIPLIED by 4
+	; because of math precision
+	SET I, 0
+	:circle
+		SET Z, [radar_radius]
+		JSR radar_point
+
+		ADD I, 5
+		IFL I, 720		; 180 grad * 4
+			SET PC, circle
+
+	; clear sensor buffer
+	SET A, 0
+	HWI [fsensor_hwid]
+	SET J, 0
+
+:next_object
+	SET A, 1
+	HWI [fsensor_hwid]
+
+	; at this moment we have sensor object
+	; in registers A, B, C, X, Y
+
+	; apply zoom
+	MUL Y, [scanner_zoom]
+	IFN EX, 0 ; if zoom out of range - set point
+		SET Y, 0xffff 		; to the edge
+
+	SET EX, 0 	; drop overflow flag
+
+	; normalize distance to 0..43 pixels
+	; 43 is showing on the edge of radar.
+	DIV Y, [distance_normalize_const]
+	; normalize scanner angle from 0xc000..0x4000
+	; to 0x0000..0x8000
+	ADD X, 0x4000
+	; normalize angle to 0..720 (180*4 precision)
+	DIV X, [angle_normalize_const]
+
+	; setup data
+	SET I, X		; angle
+	SET Z, Y		; radus
+
+	; get lo-bytes of object type
+	; used to change icon
+	SET [current_object], A
+	AND [current_object], 0xff
+
+	; draw point by calculated conditions
+	JSR radar_point
+
+	; i cant find the error, so just
+	; get 40 objects from scanner everytime
+	ADD J, 1
+	IFL J, 40
+		SET PC, next_object
+
+	; all drawing is done, set buffer to front
+	JSR swap_font
+	SET PC, POP
+
+
+; calculates point location by
+; * angle I
+; * radius Z
+; every angles MULTIPLIED by 4
+:radar_point
+	; get sin of I
+	SET A, I
+	JSR sin_4x
+	SET PUSH, A
+
+	; get cos of I
+	SET A, I
+	JSR cos_4x
+	SET B, A
+
+	SET A, POP
+
+	; draw
+	MUL A, Z		; Z is radius
+	MUL B, Z
+
+	; reset float precision
+	; all floating numbers calculates as integers
+	; by multiplying 1000 before,
+	; ang divide 1000 after calculation.
+	DIV A, 1000
+	DIV B, 1000
+
+	; left half of semi-sphere
+
+	IFL I, 360
+		JSR left_quarter
+
+	; right half of semi-sphere
+	IFG I, 359
+		JSR right_quarter
+
+	IFE [current_object], 0x3
+		SET PC, draw_ship
+
+	IFE [current_object], 0x1
+		SET PC, draw_asteroid
+		
+	IFE [current_object], 0x10
+		SET PC, draw_portal
+
+	IFG I, 0
+		JSR set_pixel
+
+	SET PC, end_radar_point
+
+;***
+;* *
+;***
+:draw_ship
+	SUB Y, 1
+	JSR set_pixel
+	ADD X, 1
+	JSR set_pixel
+	ADD X, 1
+	JSR set_pixel
+	ADD Y, 1
+	SUB X, 2
+	JSR set_pixel
+	ADD X, 2
+	JSR set_pixel
+	ADD Y, 1
+	SUB X, 2
+	JSR set_pixel
+	ADD X, 1
+	JSR set_pixel
+	ADD X, 1
+	JSR set_pixel
+
+	SET PC, end_radar_point
+
+; *
+;* *
+; *
+:draw_asteroid
+	ADD X, 1
+	JSR set_pixel
+	ADD Y, 2
+	JSR set_pixel
+	SUB Y, 1
+	SUB X, 1
+	JSR set_pixel
+	ADD X, 2
+	JSR set_pixel
+
+
+	SET PC, end_radar_point
+
+;* *
+; * 
+;* *
+:draw_portal
+	JSR set_pixel
+	ADD X, 2
+	JSR set_pixel
+	ADD Y, 2
+	JSR set_pixel
+	SUB X, 2
+	JSR set_pixel
+	SUB Y, 1
+	ADD X, 1
+	JSR set_pixel
+
+
+	SET PC, end_radar_point
+
+:end_radar_point
+	SET PC, POP
+
+
+; calculate left part of the plot point position
+:left_quarter
+	SET X, 0
+	SUB X, B		; sub x offset
+	ADD X, [radar_radius]	; add half of canvas
+
+	SET Y, 0
+	SUB Y, A		; sub y offset
+	ADD Y, 46		; add height of canvas
+
+	SET PC, POP
+
+; calculate right part of the plot point position
+:right_quarter
+	SET X, A		; set x as offset
+	ADD X, [radar_radius]		; add half of canvas
+
+	SET Y, 0
+	SUB Y, B
+	ADD Y, 46		; add height of canvas
+
+	SET PC, POP
+
+;
+;
+
+; scanner pallete
+:scan_pallete
+DAT 0x0000, 0x000A, 0x0050, 0x00AA, 0x0A00, 0x0A0A, 0x0A50, 0x0AAA, 0x0555, 0x055F, 0x05F5, 0x05FF, 0x0F55, 0x0F5F, 0x0FF5, 0x0FFF

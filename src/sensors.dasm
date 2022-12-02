@@ -8,6 +8,15 @@ DAT 0x0000
 :rear_contact
 DAT 0x0000
 
+:hardware_a DAT 0x0000
+:hardware_b DAT 0x0000
+:hardware_c DAT 0x0000
+:hardware_x DAT 0x0000
+:hardware_y DAT 0x0000
+:hardware_z DAT 0x0000
+:hardware_i DAT 0x0000
+:hardware_j DAT 0x0000
+
 
 ; Functions
 ; ====================
@@ -61,12 +70,12 @@ SET PC, POP
 :display_contact
 SET [contact_type], A
 JSR write_type
+;ADD [screen_cursor], 8
+;SET A, B
+;JSR write_hex
+;SET A, C
+;JSR write_hex
 ;ADD [screen_cursor], 1
-SET A, B
-JSR write_hex
-SET A, C
-JSR write_hex
-ADD [screen_cursor], 1
 SET A, Y
 DIV A, 0x0021
 SET J, 4
@@ -106,7 +115,9 @@ SET X, POP
 SET PC, POP
 
 :write_type
+SET PUSH, J
 SET PUSH, Z
+SET PUSH, X
 SET PUSH, B
 SET A, 0xffff
 SET B, [contact_type]
@@ -117,42 +128,50 @@ IFE B, 0x0002
 	SET PC, type_2
 IFE B, 0x0003
 	SET PC, type_3
+IFE B, 0x004
+	SET A, str_harpoon
 IFE B, 0x0008
 	SET PC, type_8
+IFE B, 0x0010
+	SET A, str_warpgate
 IFE B, 0x000A
 	SET A, str_typeA
+IFE B, 0x0011
+	SET PC, type_11
 :exit_type
 IFE A, 0xffff
 	SET A, str_unknown
 
 JSR write_string
+
 SET B, POP
+SET X, POP
 SET Z, POP
+SET J, POP
 SET PC, POP
 
 :type_1
+SET A, str_astunknown
 IFE [contact_type], 0x0001
-	SET A, str_astblue
+	SET A, str_type001
 IFE [contact_type], 0x0101
-	SET A, str_astred
+	SET A, str_type101
 IFE [contact_type], 0x0201
-	SET A, str_astgold
+	SET A, str_type201
 IFE [contact_type], 0x0301
-	SET A, str_astblack
+	SET A, str_type301
 IFE [contact_type], 0x0401
-	SET A, str_astgreen
+	SET A, str_type401
 IFE [contact_type], 0x0501
-	SET A, str_astrock
+	SET A, str_type501
 IFE [contact_type], 0x0601
-	SET A, str_astrock
+	SET A, str_type601
 IFE [contact_type], 0x0701
-	SET A, str_astrock
+	SET A, str_type701
 IFE [contact_type], 0x0801
-	SET A, str_astrock
+	SET A, str_type801
 IFE [contact_type], 0x0901
-	SET A, str_astrock
-IFE A, 0xffff
-	SET A, str_astunknown
+	SET A, str_type901
 SET PC, exit_type
 
 :type_2
@@ -160,30 +179,30 @@ SET PC, exit_type
 	SET A, str_astbits
 SET PC, exit_type
 
+
 :type_3
-IFE [contact_type], 0x0003
-	SET A, str_manmade
-IFE [contact_type], 0x0003
-	IFE PEEK, 0xACF7
-		IFE C, 0x0045
-			SET A, str_station
-IFE [contact_type], 0x0003
-	IFE [contact_size], 0x000C
-		SET A, str_ship
-IFE [contact_type], 0x0003
-	IFE PEEK, 0x6FC3
-		IFE C, 0xFEED
-			SET A, str_mystery
+SET A, str_manmade
+IFE [contact_size], 0x000D
+	SET A, str_ship
+SET J, 0
+SET X, type_3_contacts
+:type_3_loop 
+IFE PEEK, [X]
+IFE C, [X+1]
+    SET PC, type_3_set
+
+ADD X, 24
+ADD J, 1
+IFL J, [num_type_3]
+SET PC, type_3_loop
 SET PC, exit_type
 
-; Moon_Goddess  F448213E
-; THplusplus    1FB069D9
-; asbestospants 7BDAFC9D
-
-
+:type_3_set
+ADD X, 2
+SET A, X 
+SET PC, exit_type
 
 :type_8
-
 SET A, str_buoyunknown
 IFE [contact_type], 0x0308
 	SET A, str_docking
@@ -191,76 +210,33 @@ IFE [contact_type], 0x0108
 	SET A, str_type108
 IFE [contact_type], 0x0208
 	SET A, str_type208
-IFE [contact_type], 0x0108
-	IFE PEEK, 0x2513
-		IFE C, 0x74F4
-			SET A, str_outerwall
-IFE [contact_type], 0x0208
-	IFE PEEK, 0xCB57
-		IFE C, 0xF22B
-			SET A, str_Nav1
-IFE [contact_type], 0x0208
-	IFE PEEK, 0x334D
-		IFE C, 0x79CD
-			SET A, str_Nav2
-IFE [contact_type], 0x0208
-	IFE PEEK, 0xE652
-		IFE C, 0x5C54
-			SET A, str_Nav3
-IFE [contact_type], 0x0208
-	IFE PEEK, 0x68CA
-		IFE C, 0xEF38
-			SET A, str_Nav4
-IFE [contact_type], 0x0208
-	IFE PEEK, 0x0FBB
-		IFE C, 0x964B
-			SET A, str_Nav5
-IFE [contact_type], 0x0208
-	IFE PEEK, 0xA503
-		IFE C, 0xD2AA
-			SET A, str_Nav6
-IFE [contact_type], 0x0208
-	IFE PEEK, 0x6106
-		IFE C, 0x423C
-			SET A, str_Nav7
-IFE [contact_type], 0x0208
-	IFE PEEK, 0xE566
-		IFE C, 0x40F1
-			SET A, str_Nav8
-IFE [contact_type], 0x0208
-	IFE PEEK, 0x3033
-		IFE C, 0x3FF1
-			SET A, str_Nav9
-IFE [contact_type], 0x0208
-	IFE PEEK, 0x41A3
-		IFE C, 0x55BB
-			SET A, str_Nav10
-IFE [contact_type], 0x0208
-	IFE PEEK, 0xAB85
-		IFE C, 0x76AD
-			SET A, str_Nav11
-IFE [contact_type], 0x0208
-	IFE PEEK, 0x92C4
-		IFE C, 0xB6D3
-			SET A, str_Nav12
-IFE [contact_type], 0x0208
-	IFE PEEK, 0x9C2E
-		IFE C, 0xEDE2
-			SET A, str_Nav13
-IFE [contact_type], 0x0208
-	IFE PEEK, 0x93EA
-		IFE C, 0x524B
-			SET A, str_Nav14
-IFE [contact_type], 0x0208
-	IFE PEEK, 0xE4BE
-		IFE C, 0xFE36
-			SET A, str_Nav15
-IFE [contact_type], 0x0208
-	IFE PEEK, 0x2B1C
-		IFE C, 0x6096
-			SET A, str_Nav16
+SET J, 0
+SET X, type_8_contacts
+:type_8_loop 
+IFE PEEK, [X]
+IFE C, [X+1]
+    SET PC, type_8_set
+
+ADD X, 24
+ADD J, 1
+IFL J, [num_type_8]
+SET PC, type_8_loop
+SET PC, exit_type
+
+:type_8_set
+ADD X, 2
+SET A, X 
+SET PC, exit_type
+
+:type_11
+IFE [contact_type], 0x0111
+	SET A, str_type111
+IFE [contact_type], 0x0411
+	SET A, str_type411
 
 SET PC, exit_type
+
+
 
 :write_range
 SET PUSH, X
@@ -292,48 +268,97 @@ ADD [screen_cursor], 1
 SET X, POP
 SET PC, POP
 
-; Strings AND Constants
-; =======================
-:str_heading
-DAT "  Type:        ID:    Range: Ang", 0
+
+:display_dev
+
+SET [screen_cursor], 0
+
+SET A, 0 
+SET B, 0
+SET C, 0
+SET X, 0
+SET Y, 0
+SET Z, 0
+SET I, 0
+SET J, 0
+HWI [fsensor_hwid]
+SET A, 1
+HWI [fsensor_hwid]
+JSR display_registers
+SET A, 1
+HWI [fsensor_hwid]
+JSR display_registers
+SET A, 1
+HWI [fsensor_hwid]
+JSR display_registers
+SET A, 1
+HWI [fsensor_hwid]
+JSR display_registers
+SET A, 1
+HWI [fsensor_hwid]
+JSR display_registers
+SET A, 1
+HWI [fsensor_hwid]
+JSR display_registers
+SET A, 1
+HWI [fsensor_hwid]
+JSR display_registers
+
+SET [screen_cursor], 0
+
+SET PC, POP
+
+:display_registers
+SET [hardware_a], A
+SET [hardware_b], B
+SET [hardware_c], C
+SET [hardware_x], X
+SET [hardware_y], Y
+SET [hardware_z], Z
+SET [hardware_i], I
+SET [hardware_j], J
+SET A, str_a
+SET Z, 0x7000
+JSR write_string
+SET A, [hardware_a]
+JSR write_hex
+SET A, str_b
+SET Z, 0x7000
+JSR write_string
+SET A, [hardware_b]
+JSR write_hex
+SET A, str_c
+SET Z, 0x7000
+JSR write_string
+SET A, [hardware_c]
+JSR write_hex
+SET A, str_x
+SET Z, 0x7000
+JSR write_string
+SET A, [hardware_x]
+JSR write_hex
+SET A, str_y
+SET Z, 0x7000
+JSR write_string
+SET A, [hardware_y]
+JSR write_hex
+SET A, str_z
+SET Z, 0x7000
+JSR write_string
+SET A, [hardware_z]
+JSR write_hex
+SET A, str_i
+SET Z, 0x7000
+JSR write_string
+SET A, [hardware_i]
+JSR write_hex
+SET A, str_j
+SET Z, 0x7000
+JSR write_string
+SET A, [hardware_j]
+JSR write_hex
+SET PC, POP
                                      
-:str_station
-DAT "Station     ", 0
-:str_ship
-DAT "Player Ship ", 0
-:str_mystery
-DAT "Relic Ship  ", 0
-:str_manmade
-DAT "Manmade Obj ", 0
-:str_docking
-DAT "Dock Buoy   ", 0
-:str_type108
-DAT "Haz Buoy    ", 0
-:str_buoyunknown
-DAT "Buoy(Unknwn)", 0
-:str_astgreen
-DAT "Ast (Green) ", 0
-:str_astred
-DAT "Ast (Red)   ", 0
-:str_astblack
-DAT "Ast (Black) ", 0
-:str_astblue
-DAT "Ast (Blue)  ", 0
-:str_astgold
-DAT "Ast (Gold)  ", 0
-:str_astrock
-DAT "Ast (Rock)  ", 0
-:str_astbits
-DAT "Ast bits    ", 0
-:str_astunknown
-DAT "Ast(Unknown)", 0
-:str_typeA
-DAT "Ship Debris ", 0
-:str_unknown
-DAT "Unknown     ", 0
-:str_type208
-DAT "Nav Buoy    ", 0
-:str_outerwall
-DAT "Outer Wall  ", 0
+
 
 

@@ -1,0 +1,202 @@
+:num_keys
+DAT 18
+
+:keys
+DAT 'w'
+DAT 'a'
+DAT 's'
+DAT 'd'
+DAT 'q'
+DAT 'e'
+DAT '1'
+DAT '2'
+DAT 'f'
+DAT 't'
+DAT 'g'
+DAT 'z'
+DAT 'x'
+DAT 0x0080 ; Arrow up
+DAT	0x0081 ; Arrow down
+DAT	0x0082 ; Arrow left
+DAT	0x0083 ; Arrow right
+DAT 0x0011 ; Return Key
+
+:keys_changed
+DAT 0x0000
+:keys_down
+:key_w_down
+DAT 0x0000
+:key_a_down
+DAT 0x0000
+:key_s_down
+DAT 0x0000
+:key_d_down
+DAT 0x0000
+:key_q_down
+DAT 0x0000
+:key_e_down
+DAT 0x0000
+:key_1_down
+DAT 0x0000
+:key_2_down
+DAT 0x0000
+:key_f_down
+DAT 0x0000
+:key_t_down
+DAT 0x0000
+:key_g_down
+DAT 0x0000
+:key_x_down
+DAT 0x0000
+:key_z_down
+DAT 0x0000
+:key_up_down
+DAT 0x0000
+:key_down_down
+DAT 0x0000
+:key_left_down
+DAT 0x0000
+:key_right_down
+DAT 0x0000
+:key_enter_down
+DAT 0x0000
+
+:input_handler
+SET PUSH, I
+SET PUSH, B
+SET PUSH, A
+
+SET I, 0
+SET A, 2
+:key_update_loop
+SET B, [I + keys]
+HWI [keyboard_hwid]
+SET [I + keys_down], C
+ADD I, 1
+IFL I, [num_keys]
+	SET PC, key_update_loop
+
+; 0: W
+; 1: W
+; 2: S
+; 3: S
+; 4: D | E
+; 5: D | Q
+; 6: A | Q
+; 7: A | E
+
+SET A, 0
+; 0
+; 1
+SET B, 0
+IFE [key_w_down], 1
+    SET B, [throttle]
+SET I, 0
+HWI [thrusters_hwid]
+SET I, 1
+HWI [thrusters_hwid]
+; 2
+; 3
+SET B, 0
+IFE [key_s_down], 1
+    SET B, [throttle]
+SET I, 2
+HWI [thrusters_hwid]
+SET I, 3
+HWI [thrusters_hwid]
+; 4
+SET B, 0
+IFE [key_d_down], 1
+    SET B, [throttle]
+IFE [key_e_down], 1
+SET B, [throttle]
+SET I, 4
+HWI [thrusters_hwid]
+; 5
+SET B, 0
+IFE [key_d_down], 1
+    SET B, [throttle]
+IFE [key_q_down], 1
+SET B, [throttle]
+SET I, 5
+HWI [thrusters_hwid]
+; 6
+SET B, 0
+IFE [key_a_down], 1
+    SET B, [throttle]
+IFE [key_q_down], 1
+    SET B, [throttle]
+SET I, 6
+HWI [thrusters_hwid]
+; 7
+SET B, 0
+IFE [key_a_down], 1
+    SET B, [throttle]
+IFE [key_e_down], 1
+    SET B, [throttle]
+SET I, 7
+HWI [thrusters_hwid]
+
+; harpoon0
+IFE [key_1_down], 1
+	JSR fireHarpoon0
+SET [key_1_down], 0
+; harpoon1
+IFE [key_2_down], 1
+	JSR fireHarpoon1
+SET [key_2_down], 0
+
+IFE [key_t_down], 1
+	JSR throttle_up
+IFE [key_g_down], 1
+	JSR throttle_down
+
+IFE [key_enter_down], 1
+	JSR pressed_enter
+
+IFE [key_f_down], 1
+	JSR fire_laser
+
+
+
+IFE [mode], 0
+	IFE [key_x_down], 1
+		SUB [scanner_zoom], 1
+IFE [mode], 0
+	IFE [key_z_down], 1
+		ADD [scanner_zoom], 1
+
+IFE [mode], 2
+	JSR ops_control
+
+IFG [mode], 2
+	JSR radio_control
+
+
+IFE [key_left_down], 1
+	IFE [mode], 0
+		JSR scan_exit_radio
+IFE [key_right_down], 1
+	IFE [mode], 0
+		JSR scan_exit_helm
+IFE [key_left_down], 1
+	IFE [mode], 0
+		JSR radio3_mode_func
+
+IFE [key_left_down], 1
+	IFE [mode], 
+		JSR dev_mode_func
+
+IFE [key_right_down], 1
+	IFE [mode], 1
+		JSR ops_mode_func
+
+
+IFE [key_right_down], 1
+	IFE [mode], 0
+		JSR helm_mode_func
+
+SET A, POP
+SET B, POP
+SET I, POP
+SET PC, POP
