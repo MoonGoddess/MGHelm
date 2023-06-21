@@ -225,7 +225,7 @@ SET PC, wait_for_key_loop
 ;		JSR radio3_mode_func
 
 ;IFE [key_left_down], 1
-;	IFE [mode], 1
+;	IFE [mode], 0xF
 ;		JSR dev_mode_func
 
 ;IFE [key_right_down], 1
@@ -343,29 +343,29 @@ HWI [screen_hwid]
 JSR radio3_mode_func
 SET PC, POP
 
-:dev_mode_func
-SET PUSH, Z
-SET PUSH, Y
-SET PUSH, X
-SET PUSH, J
-SET PUSH, I
-SET PUSH, C
-SET PUSH, B
-SET PUSH, A
-SET [mode], F
-JSR clear_screen
-JSR display_dev
-SET [key_left_down], 0
-SET [key_right_down], 0
-SET A, POP
-SET B, POP
-SET C, POP
-SET I, POP
-SET J, POP
-SET X, POP
-SET Y, POP
-SET Z, POP
-SET PC, POP
+;:dev_mode_func
+;SET PUSH, Z
+;SET PUSH, Y
+;SET PUSH, X
+;SET PUSH, J
+;SET PUSH, I
+;SET PUSH, C
+;SET PUSH, B
+;SET PUSH, A
+;SET [mode], 0x000F
+;JSR clear_screen
+;JSR display_dev
+;SET [key_left_down], 0
+;SET [key_right_down], 0
+;SET A, POP
+;SET B, POP
+;SET C, POP
+;SET I, POP
+;SET J, POP
+;SET X, POP
+;SET Y, POP
+;SET Z, POP
+;SET PC, POP
 
 :helm_mode_func
 SET PUSH, Z

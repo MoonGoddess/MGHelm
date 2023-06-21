@@ -183,9 +183,9 @@ IFE [key_left_down], 1
 	IFE [mode], 0
 		JSR radio3_mode_func
 
-IFE [key_left_down], 1
-	IFE [mode], 
-		JSR dev_mode_func
+;IFE [key_left_down], 1
+;	IFE [mode], 0x000F 
+;		JSR dev_mode_func
 
 IFE [key_right_down], 1
 	IFE [mode], 1
