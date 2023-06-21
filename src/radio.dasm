@@ -506,12 +506,12 @@ SET [0x6A01], C
 SET PC, POP
 
 :radio_right
-IFE [mode], 5
-	IFE [rcursor3], 0
-		JSR dev_mode_func
-;IFE [mode], 4
-;	IFE [rcursor2], 0
-;		JSR radio3_mode_func
+;IFE [mode], 5
+;	IFE [rcursor3], 0
+;		JSR dev_mode_func
+IFE [mode], 4
+	IFE [rcursor2], 0
+		JSR radio3_mode_func
 IFE [mode], 3
 	IFE [rcursor1], 0
 		JSR radio2_mode_func
