@@ -7,7 +7,7 @@ DAT 0x000d
 
 
 
-:mode                           ; which tab is active, 0 scanner, 1 helm, 2 ops, 3 radio 1, 4 radio 2, 5 radio 3
+:mode                           	 ; which tab is active, 0 scanner, 1 helm, 2 ops, 3 radio 1, 4 radio 2, 5 radio 3
 DAT 0x0001
 :hcursor                             ;  which line of helm mode is active, currently unused
 DAT 0x0000
@@ -763,15 +763,15 @@ DAT 0x0000
 DAT 0x0000
 
 
-.include 'MGhelm\src\drivers.dasm'    ; Hardware support
-.include 'MGhelm\src\input.dasm'	  ; Keyboard handling.
-.include 'MGhelm\src\thrusters.dasm'  ; Thrusters and Lasers
-.include 'MGhelm\src\stdio.dasm'      ; Functions for writing to screen
-.include 'MGhelm\src\sensors.dasm'    ; support functions for Sensor display
-.include 'MGhelm\src\ops.dasm'        ; functions for ops screen
-.include 'MGhelm\src\radio.dasm'      ; functions for radio controls
-.include 'MGhelm\src\nav.dasm'        ; possible upcoming nav screen
-.include 'MGhelm\src\strings.dasm'    ; strings
-.include 'MGhelm\src\math.dasm'       ; math
-.include 'MGhelm\src\gscanner.dasm'   ; Graphical Scanner
-.include 'MGhelm\src\drawing.dasm'    ; Drawing functions
+.include <drivers.dasm>    ; Hardware support
+.include <input.dasm>	  ; Keyboard handling.
+.include <thrusters.dasm>  ; Thrusters and Lasers
+.include <stdio.dasm>      ; Functions for writing to screen
+.include <sensors.dasm>    ; support functions for Sensor display
+.include <ops.dasm>        ; functions for ops screen
+.include <radio.dasm>      ; functions for radio controls
+.include <nav.dasm>        ; possible upcoming nav screen
+.include <strings.dasm>    ; strings
+.include <math.dasm>       ; math
+.include <gscanner.dasm>   ; Graphical Scanner
+.include <drawing.dasm>    ; Drawing functions
