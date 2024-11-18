@@ -1,7 +1,7 @@
 ; Memory
 ; ===================
 :screen_cursor
-DAT 0x0000
+DAT 0x0000	; Stores the current cursor position in video_ram.
 
 
 
@@ -10,81 +10,94 @@ DAT 0x0000
 ; Functions
 ; ====================
 
-; Write Hex Function 
-; writes a to the screen as hex.  Set A to the word, and Z to the color
-; uses video_ram for LEM1802 data location, and screen_cursor for location in that memory
-; returns nothing.
+; Write Hex Function 
+; Writes a word to the screen as hexadecimal. 
+;  - A register: Contains the word to be written in hexadecimal format.
+;  - Z register: Contains the color code for the output.
+; Uses video_ram for LEM1802 data location and screen_cursor for the position in that memory.
+; Returns nothing
 
 :write_hex
-SET PUSH, A
-SET PUSH, B
-SET B, A
-SHR A, 0x0C
-JSR to_string
-SET A, B
-SHL A, 0x04
-SHR A, 0x0C
-JSR to_string
-SET A, B
-SHL A, 0x08
-SHR A, 0x0C
-JSR to_string
-SET A, B
-SHL A, 0x0C
-SHR A, 0x0C
-JSR to_string
-SET B, POP
-SET A, POP
-SET PC, POP
+	SET PUSH, A	; Save the value of A (word to be written) to the stack.
+	SET PUSH, B	; Save the value of B to the stack.
+
+	SET B, A	; Copy the word from A to B.
+	SHR A, 0x0C     ; Shift A right by 12 bits to get the most significant hex digit.
+	JSR to_string   ; Convert the digit to its ASCII representation and print it.
+
+	SET A, B        ; Restore the original word from B to A.
+	SHL A, 0x04     ; Shift A left by 4 bits.
+	SHR A, 0x0C     ; Shift A right by 12 bits to get the next hex digit.
+	JSR to_string   ; Convert the digit to its ASCII representation and print it.
+
+	SET A, B        ; Restore the original word from B to A.
+	SHL A, 0x08     ; Shift A left by 8 bits.
+	SHR A, 0x0C     ; Shift A right by 12 bits to get the next hex digit.
+	JSR to_string   ; Convert the digit to its ASCII representation and print it.
+
+
+    	SET A, B        ; Restore the original word from B to A.
+    	SHL A, 0x0C     ; Shift A left by 12 bits.
+    	SHR A, 0x0C     ; Shift A right by 12 bits to get the least significant hex digit.
+    	JSR to_string   ; Convert the digit to its ASCII representation and print it.
+
+    	SET B, POP      ; Restore the value of B from the stack.
+    	SET A, POP      ; Restore the value of A from the stack.
+    	SET PC, POP     ; Return from the subroutine.
 ; =========
 ; End write_hex
 
-; Write Decimal Function 
-; writes a word to the screen as decimal integer.  Set A to the hex, and Z to the color, 
-; J for the number of spaces to clear, defaults to 5 if unset.
-; uses video_ram for LEM1802 data location, and screen_cursor for location in that memory
-; returns nothing.
+; Write Decimal Function 
+; Writes a word to the screen as a decimal integer. 
+;  - A register: Contains the word to be written in hexadecimal format.
+;  - Z register: Contains the color code for the output.
+;  - J register:  Number of spaces to clear before writing the number (defaults to 5).
+; Uses video_ram for LEM1802 data location and screen_cursor for the position in that memory.
+; Returns nothing.
 
 :write_decimal
-SET PUSH, B
-SET PUSH, C
-SET PUSH, I
-SET PUSH, Y
-SET PUSH, X
-IFE J, 0
-	SET J, 5
-IFG J, 5
-	SET J, 5
-SET Y, 1
-SET X, [video_ram]
-ADD X, [screen_cursor]
+    SET PUSH, B     ; Save registers B, C, I, Y, and X to the stack.
+    SET PUSH, C
+    SET PUSH, I
+    SET PUSH, Y
+    SET PUSH, X
+    IFE J, 0        ; If J is 0 (unset), set it to 5 (default number of spaces).
+    	SET J, 5
+    IFG J, 5        ; If J is greater than 5, also set it to 5.
+    	SET J, 5
+    SET Y, 1        ; Initialize a counter Y to 1.
+    SET X, [video_ram] ; Get the base address of video memory.
+    ADD X, [screen_cursor] ; Add the current cursor position to get the address to write to.
 
-:clear_previous_loop
-ADD X, 1
-SET [X], 0x0000
-ADD Y, 1
-IFN Y, J
-	SET PC, clear_previous_loop
-ADD [screen_cursor], J
-SET I, 1
-SET C, A
-:decimalloop
-SET B, C
-MOD B, 10
-SET A, B
-JSR to_string
-SUB [screen_cursor], 2
-DIV C, 10
-ADD I, 1
-IFN C, 0
-	SET PC, decimalloop
-ADD [screen_cursor], I
-SET X, POP
-SET Y, POP
-SET I, POP
-SET C, POP
-SET B, POP
-SET PC, POP
+
+	:clear_previous_loop	; Loop to clear the previous content at the cursor position.
+    		ADD X, 1        ; Increment the address to clear the next character.
+    		SET [X], 0x0000 ; Write a null character (0x0000) to clear the current character.
+    		ADD Y, 1        ; Increment the counter Y.
+    		IFN Y, J        ; If Y is not equal to J (number of spaces), continue the loop.
+    			SET PC, clear_previous_loop
+    		ADD [screen_cursor], J ; Move the cursor forward by J positions.
+
+    		SET I, 1        ; Initialize a counter I to 1.
+    		SET C, A        ; Copy the word from A to C.
+	:decimalloop       ; Loop to convert the word to decimal and print it digit by digit.
+    		SET B, C        ; Copy the current value from C to B.
+    		MOD B, 10       ; Calculate the remainder when B is divided by 10 (get the last digit).
+    		SET A, B        ; Move the last digit to A.
+    		JSR to_string   ; Convert the digit to its ASCII representation and print it.
+    		SUB [screen_cursor], 2 ; Move the cursor back two positions (to overwrite the previous digit). 
+    		DIV C, 10       ; Divide C by 10 to remove the last digit.
+		ADD I, 1        ; Increment the counter I.
+    		IFN C, 0        ; If C is not 0 (more digits to process), continue the loop.
+    			SET PC, decimalloop
+    		ADD [screen_cursor], I ; Move the cursor forward by I positions (to the end of the number).
+
+    SET X, POP      ; Restore registers X, Y, I, C, and B from the stack.
+    SET Y, POP
+    SET I, POP
+    SET C, POP
+    SET B, POP
+    SET PC, POP     ; Return from the subroutine.
 ; =========
 ; End write_decimal
 
